@@ -1,0 +1,22 @@
+package com.example.iwawka.utils
+
+import com.example.iwawka.domain.models.Message
+import com.example.iwawka.ui.states.UiState
+
+typealias StateTransformer = (UiState) -> UiState
+
+infix fun StateTransformer.andThen(other: StateTransformer): StateTransformer = {
+        state -> other(this(state))
+}
+
+fun updateInputText(text: String): StateTransformer = {it.copy(inputText = text)}
+fun setLoading(loading: Boolean): StateTransformer = {it.copy(isLoading = loading)}
+fun setError(error: String?): StateTransformer = {it.copy(error = error)}
+
+fun sendMessageFlow(message: Message): StateTransformer =
+    combineT(
+        addMessage(message),
+        updateInputText(""),
+        clearReply(),
+        setLoading(true)
+    )

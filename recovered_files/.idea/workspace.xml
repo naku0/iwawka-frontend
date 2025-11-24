@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="08966997-2b92-4b24-a402-174decfb6c39" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/domain/models/Chat.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/domain/repositories/ChatRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/components/chat/ChatDetailScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/components/chat/ChatListItem.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/components/messages/MessageBubble.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/screens/chat/ChatDetailScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/screens/messages/MessagesScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/MainAction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/MainReducer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/deploymentTargetSelector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/deploymentTargetSelector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/domain/models/Message.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/domain/models/Message.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/components/ThemeSwitcher.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/components/ThemeSwitcher.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/extensions/StateExtensions.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/screens/MainScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/screens/MainScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/screens/SettingsScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/screens/settings/SettingsScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/InputState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/InputState.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/MainState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/MainState.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/MessageState.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/states/MessageState.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/viewmodel/MainViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/example/iwawka/ui/viewmodel/MainViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../gradle/libs.versions.toml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "naku0"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/naku0/iwawka-frontend.git",
+    "accountId": "5227a10f-ab75-40de-98f3-d6cca4d3e21d"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="35vm11LvwAj4924kpxO93BDasjg" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sniyaq/AndroidStudioProjects/iwawka/recovered_files&quot;
+  }
+}</component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="08966997-2b92-4b24-a402-174decfb6c39" name="Changes" comment="" />
+      <created>1763998700306</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763998700306</updated>
+    </task>
+    <servers />
+  </component>
+</project>

@@ -1,0 +1,6 @@
+package com.example.iwawka.data.models
+
+data class AppSettings (
+    val theme: String,
+    val language: String
+)

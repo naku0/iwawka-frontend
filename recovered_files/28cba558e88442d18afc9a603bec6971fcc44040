@@ -1,0 +1,50 @@
+package com.example.iwawka.viewmodel.states
+
+import com.example.iwawka.domain.models.Message
+
+data class MessageState(
+    val messages: List<Message> = emptyList(),
+    val deletedMessageIds: Set<String> = emptySet(),
+    val selectedIds: Set<String> = emptySet(),
+    val isLoading: Boolean = false,
+    val hasMoreMessages: Boolean = true
+) {
+    /**
+     * Сообщения для отображения (исключая удаленные)
+     */
+    val visibleMessages: List<Message>
+        get() = messages.filterNot { it.id in deletedMessageIds }
+
+    /**
+     *Добавление нового сообщения (в конец)
+     */
+    fun addMessage(message: Message): MessageState =
+        copy(messages = messages + message)
+
+    /**
+     * Загрузка старых сообщений (в начало)
+     */
+    fun prependMessages(oldMessages: List<Message>): MessageState =
+        copy(messages = oldMessages + messages)
+
+    // Выбор сообщения
+    fun selectMessage(id: String): MessageState =
+        copy(selectedIds = selectedIds + id)
+
+    // Удаление сообщения
+    fun removeMessage(id: String): MessageState =
+        copy(deletedMessageIds = deletedMessageIds + id)
+
+    // Восстановление сообщения
+    fun restoreMessage(id: String): MessageState =
+        copy(deletedMessageIds = deletedMessageIds - id)
+
+    fun clearSelection(): MessageState =
+        copy(selectedIds = emptySet())
+
+    fun setLoading(loading: Boolean): MessageState =
+        copy(isLoading = loading)
+
+    fun setHasMoreMessages(hasMore: Boolean): MessageState =
+        copy(hasMoreMessages = hasMore)
+}

@@ -1,0 +1,27 @@
+package com.example.iwawka.ui.viewmodel
+
+import androidx.lifecycle.ViewModel
+import com.example.iwawka.domain.usecases.GetUserUseCase
+import com.example.iwawka.domain.usecases.SendMessageUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+class MainViewModel(
+    private val getUserUseCase: GetUserUseCase,
+    private val sendMessageUseCase: SendMessageUseCase,
+    ) : ViewModel() {
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    fun onMessageChanged(message: String){
+        _uiState.value = _uiState.value.copy(userMessage = message)
+    }
+    
+}
+
+data class UiState(
+    val userMessage: String = "",
+    val aiResponse: String = "",
+    val isLoading: Boolean = false
+)

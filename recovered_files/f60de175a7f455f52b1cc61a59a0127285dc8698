@@ -1,0 +1,25 @@
+package com.example.iwawka.ui.viewmodel
+
+import androidx.lifecycle.ViewModel
+import com.example.iwawka.domain.models.Message
+import com.example.iwawka.ui.extensions.addMessage
+import com.example.iwawka.ui.extensions.clearError
+import com.example.iwawka.ui.extensions.clearForNewMessage
+import com.example.iwawka.ui.extensions.clearReply
+import com.example.iwawka.ui.extensions.setError
+import com.example.iwawka.ui.extensions.setLoading
+import com.example.iwawka.ui.extensions.setReplyingTo
+import com.example.iwawka.ui.extensions.startLoading
+import com.example.iwawka.ui.extensions.updateInputText
+import com.example.iwawka.ui.states.UiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+class ViewModel: ViewModel() {
+    private val _state = MutableStateFlow(UiState())
+    val state: StateFlow<UiState> = _state.asStateFlow()
+
+    
+
+}

@@ -1,0 +1,19 @@
+package com.example.iwawka.utils
+
+import com.example.iwawka.domain.models.Message
+import com.example.iwawka.ui.states.UiState
+import kotlinx.coroutines.flow.combine
+
+typealias StateTransformers = (UiState) -> UiState
+
+fun updateInputText(text: String): StateTransformers = {it.copy(inputText = text)}
+fun setLoading(loading: Boolean): StateTransformers = {it.copy(isLoading = loading)}
+fun setError(error: String?): StateTransformers = {it.copy(error = error)}
+
+fun sendMessageFlow(message: Message): StateTransformers =
+    combine(
+        addMessage(message),
+        updateInputText(""),
+        clearReply(),
+        setLoading("true")
+    )

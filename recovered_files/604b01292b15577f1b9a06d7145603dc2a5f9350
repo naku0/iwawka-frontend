@@ -1,0 +1,4 @@
+package com.example.iwawka.data.models
+
+class AppSettings {
+}
