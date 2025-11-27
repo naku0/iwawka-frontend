@@ -5,7 +5,7 @@ import com.example.iwawka.domain.models.Profile
 import com.example.iwawka.domain.models.User
 import kotlinx.coroutines.delay
 
-object TempStorage {
+object TempProfilesStorage {
     private val profiles = mutableMapOf<String, Profile>().apply {
         put("1", Profile(
             user = User(
