@@ -1,0 +1,4 @@
+package com.example.iwawka.ui.states
+
+class ErrorState {
+}
