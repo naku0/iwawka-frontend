@@ -1,5 +1,5 @@
 // clientStorage/TempStorage.kt
-package com.example.iwawka.clientStorage
+package com.example.iwawka.model.clientStorage
 
 import com.example.iwawka.domain.models.Profile
 import com.example.iwawka.domain.models.User

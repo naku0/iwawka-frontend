@@ -1,4 +1,4 @@
-package com.example.iwawka.data.dto
+package com.example.iwawka.model.dto
 
 import kotlinx.serialization.Serializable
 
