@@ -1,10 +1,8 @@
 package com.example.iwawka.ui.components.navigation
 
-import android.window.SplashScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,14 +10,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.iwawka.domain.models.User
 
 @Composable
 fun AppDrawer(
     currentScreen: String,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    username: String = "Artem Korolev",
-    phone: String = "+79818365630"
+    user: User?
 ){
     Column(
         modifier = modifier
@@ -29,8 +27,8 @@ fun AppDrawer(
             .verticalScroll(rememberScrollState())
     ) {
         DrawerHeader(
-            username = username,
-            phone = phone
+            username = user?.name ?: "It's you!",
+            phone = user?.phone ?: "Your number"
         )
 
         drawerItems.forEach { item ->

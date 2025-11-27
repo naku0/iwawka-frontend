@@ -1,4 +1,8 @@
-package com.example.iwawka.ui.states
+package com.example.iwawka.ui.states.main
+
+import com.example.iwawka.ui.states.main.MainAction
+import com.example.iwawka.ui.states.main.MainState
+import com.example.iwawka.ui.states.MessageState
 
 class MainReducer {
     fun reduce(state: MainState, action: MainAction): MainState = when (action) {

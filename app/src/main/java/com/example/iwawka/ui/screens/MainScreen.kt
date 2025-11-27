@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,27 +25,34 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.iwawka.domain.repositories.ChatRepository
+import com.example.iwawka.domain.repositories.impl.ChatRepository
 import com.example.iwawka.ui.components.chat.ChatDetailScreen
+import com.example.iwawka.ui.components.common.CounterButton
 import com.example.iwawka.ui.components.navigation.AppDrawer
 import com.example.iwawka.ui.components.navigation.drawerItems
 import com.example.iwawka.ui.screens.settings.SettingsScreen
 import com.example.iwawka.ui.screens.messages.MessagesScreen
+import com.example.iwawka.ui.screens.profile.ProfileScreen
 import com.example.iwawka.ui.theme.DarkColorScheme
 import com.example.iwawka.ui.theme.LightColorScheme
 import com.example.iwawka.ui.theme.LocalAppState
+import com.example.iwawka.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    viewModel: MainViewModel
+) {
     val appState = LocalAppState.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     // Состояние для управления экранами
-    var currentScreen by remember { mutableStateOf("home") }
+    var currentScreen by remember { mutableStateOf("messages") }
     var currentChatId by remember { mutableStateOf<String?>(null) }
+
+    val profileState by viewModel.profileState.collectAsState()
 
     val currentTheme by remember(appState.isDarkTheme) {
         mutableStateOf(if (appState.isDarkTheme) DarkColorScheme else LightColorScheme)
@@ -60,7 +68,8 @@ fun MainScreen() {
                         currentScreen = screen
                         currentChatId = null // Сбрасываем чат при переходе по меню
                         scope.launch { drawerState.close() }
-                    }
+                    },
+                    user = profileState.profile?.user
                 )
             }
         ) {
@@ -103,8 +112,7 @@ fun MainScreen() {
                         )
                     } else {
                         when (currentScreen) {
-                            "home" -> HomeContent()
-                            "profile" -> ProfileContent()
+                            "profile" -> ProfileScreen(viewModel = viewModel)
                             "settings" -> SettingsScreen()
                             "messages" -> MessagesScreen(
                                 onChatClick = { chatId ->
@@ -122,40 +130,4 @@ fun MainScreen() {
 // Вспомогательная функция для получения имени пользователя по chatId
 private fun getChatUserName(chatId: String): String {
     return ChatRepository.getAllChats().find { it.id == chatId }?.userName ?: "Пользователь"
-}
-@Composable
-fun HomeContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(24.dp)
-    ) {
-        Text(
-            text = "Darova epta",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        com.example.iwawka.ui.components.CounterButton()
-
-        Text(
-            text = "current count is ${com.example.iwawka.ui.theme.LocalAppState.current.counter}",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
-@Composable
-fun ProfileContent() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp)
-    ) {
-        Text(
-            text = "Профиль пользователя",
-            style = MaterialTheme.typography.headlineMedium
-        )
-    }
 }

@@ -24,7 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.iwawka.domain.repositories.ChatRepository
+import com.example.iwawka.domain.repositories.impl.ChatRepository
 import com.example.iwawka.ui.components.chat.ChatListItem
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -17,7 +17,6 @@ data class DrawerItem(
 )
 
 val drawerItems = listOf<DrawerItem>(
-    DrawerItem("home", "Главная", Icons.Default.Home),
     DrawerItem("profile", "Профиль", Icons.Default.Person),
     DrawerItem("messages", "Сообщения", Icons.Default.Email),
     DrawerItem("settings", "Настройки", Icons.Default.Settings),

@@ -1,6 +1,12 @@
-package com.example.iwawka.ui.states
+package com.example.iwawka.ui.states.main
 
 import com.example.iwawka.domain.models.Message
+import com.example.iwawka.ui.states.AttachmentState
+import com.example.iwawka.ui.states.InputState
+import com.example.iwawka.ui.states.MediaState
+import com.example.iwawka.ui.states.MessageState
+import com.example.iwawka.ui.states.NetworkState
+import com.example.iwawka.ui.states.UiState
 
 data class MainState(
     val currentChatId: String? = null,

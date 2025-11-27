@@ -1,4 +1,4 @@
-package com.example.iwawka.ui.states
+package com.example.iwawka.ui.states.main
 
 import com.example.iwawka.domain.models.Message
 

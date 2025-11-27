@@ -1,9 +1,7 @@
-package com.example.iwawka.domain.repositories
+package com.example.iwawka.domain.repositories.impl
 
 import com.example.iwawka.domain.models.Chat
-import com.example.iwawka.domain.models.Message
-import com.example.iwawka.domain.models.User
-import kotlinx.coroutines.flow.Flow
+
 /*
 interface ChatRepository {
     // Messages

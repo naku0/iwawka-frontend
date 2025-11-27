@@ -1,4 +1,4 @@
-package com.example.iwawka.ui.components
+package com.example.iwawka.ui.components.common
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme

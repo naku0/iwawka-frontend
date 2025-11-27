@@ -1,4 +1,4 @@
-package com.example.iwawka.ui.components
+package com.example.iwawka.ui.components.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
