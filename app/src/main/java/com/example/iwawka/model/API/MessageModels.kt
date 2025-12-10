@@ -1,0 +1,19 @@
+package com.example.iwawka.model.API
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class SendMessageRequest(
+    val chatId: Int,
+    val content: String
+)
+
+@Serializable
+data class MessageDto(
+    val id: Int,
+    val chatId: Int,
+    val content: String,
+    val created: String,
+    val senderId: Int
+)
+
