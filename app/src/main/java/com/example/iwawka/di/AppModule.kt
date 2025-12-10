@@ -1,30 +1,46 @@
 package com.example.iwawka.di
 
+import android.content.Context
 import com.example.iwawka.domain.repositories.impl.ChatRepositoryImpl
 import com.example.iwawka.domain.repositories.impl.MessageRepositoryImpl
 import com.example.iwawka.domain.repositories.impl.ProfileRepositoryImpl
 import com.example.iwawka.domain.usecases.profile.GetProfileUseCase
 import com.example.iwawka.domain.usecases.profile.UpdateProfileUseCase
 import com.example.iwawka.model.API.IwawkaApi
+import com.example.iwawka.model.auth.TokenStorage
 import com.example.iwawka.ui.viewmodel.MainViewModel
 
 object AppModule {
-    private val api: IwawkaApi by lazy {
-        IwawkaApi() // You can configure baseUrl here if needed
+    private var tokenStorage: TokenStorage? = null
+    private var api: IwawkaApi? = null
+
+    fun initialize(context: Context, baseUrl: String = "https://api.example.com") {
+        tokenStorage = TokenStorage(context)
+        api = IwawkaApi(baseUrl, tokenStorage)
     }
 
-    private val currentUserId: String by lazy {
-        "1" // TODO: Get from auth/session
+    private fun getApi(): IwawkaApi {
+        return api ?: throw IllegalStateException("AppModule not initialized. Call AppModule.initialize(context) first.")
     }
+
+    private fun getTokenStorage(): TokenStorage {
+        return tokenStorage ?: throw IllegalStateException("AppModule not initialized. Call AppModule.initialize(context) first.")
+    }
+
+    private val currentUserId: String
+        get() {
+            // TODO: Extract from JWT token or get from API
+            return "1"
+        }
 
     private val profileRepository: com.example.iwawka.domain.repositories.interfaces.ProfileRepository
-        by lazy { ProfileRepositoryImpl(api) }
+        get() = ProfileRepositoryImpl(getApi())
 
     private val messageRepository: com.example.iwawka.domain.repositories.interfaces.MessageRepository
-        by lazy { MessageRepositoryImpl(api, currentUserId) }
+        get() = MessageRepositoryImpl(getApi(), currentUserId)
 
     private val chatRepository: com.example.iwawka.domain.repositories.interfaces.ChatRepository
-        by lazy { ChatRepositoryImpl(api) }
+        get() = ChatRepositoryImpl(getApi())
 
     private val getProfileUseCase: GetProfileUseCase
         get() = GetProfileUseCase(profileRepository)
@@ -35,4 +51,8 @@ object AppModule {
     fun provideMainViewModel(): MainViewModel {
         return MainViewModel(getProfileUseCase, updateProfileUseCase)
     }
+
+    fun provideApi(): IwawkaApi = getApi()
+    
+    fun provideTokenStorage(): TokenStorage = getTokenStorage()
 }

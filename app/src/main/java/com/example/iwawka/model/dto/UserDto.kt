@@ -10,13 +10,43 @@ data class UserDto(
 )
 
 @Serializable
-data class LoginRequest(
-    val phone: String,
+data class RegisterRequest(
+    val username: String,
+    val email: String,
     val password: String
 )
 
 @Serializable
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class RefreshTokenRequest(
+    val refreshToken: String
+)
+
+@Serializable
+data class LogoutRequest(
+    val refreshToken: String
+)
+
+@Serializable
+data class AuthTokens(
+    val accessToken: String,
+    val refreshToken: String,
+    val expiresIn: Int
+)
+
+@Serializable
 data class LoginResponse(
-    val token: String,
-    val user: UserDto
+    val accessToken: String,
+    val refreshToken: String,
+    val expiresIn: Int
+)
+
+@Serializable
+data class LogoutResponse(
+    val message: String
 )

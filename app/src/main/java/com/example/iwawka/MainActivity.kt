@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize AppModule with context
+        AppModule.initialize(this)
         enableEdgeToEdge()
         lifecycleScope.launch {
             val curId = TempStorage.getCurrentUserId()
