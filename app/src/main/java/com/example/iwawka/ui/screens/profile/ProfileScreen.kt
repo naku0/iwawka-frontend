@@ -26,7 +26,6 @@ fun ProfileScreen(
     onEditProfile: () -> Unit = {},
     onProfileClick: (String) -> Unit = {}
 ) {
-
     val profileState by viewModel.profileState.collectAsStateWithLifecycle()
 
     LaunchedEffect(userId) {

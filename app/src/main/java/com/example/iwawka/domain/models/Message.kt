@@ -3,6 +3,7 @@ package com.example.iwawka.domain.models
 import Attachment
 import kotlinx.serialization.Serializable
 
+/*
 @Serializable
 data class Message(
     val id: String,
@@ -16,4 +17,15 @@ data class Message(
     val isEdited: Boolean = false,
     val isFromMe: Boolean,
     val isRead: Boolean = false
+)
+*/
+
+@Serializable
+data class Message(
+    val id: String,
+    val text: String,
+    val timestamp: String,
+    val isFromMe: Boolean,
+    var isRead: Boolean = false
+    // Убрали пока не нужные поля: senderId, chatId, replyToId, attachment, isSent, isEdited
 )

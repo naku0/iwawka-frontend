@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,37 +34,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.iwawka.domain.models.Message
+import com.example.iwawka.domain.models.Chat
 import com.example.iwawka.ui.components.messages.MessageBubble
+import com.example.iwawka.ui.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatDetailScreen(userName: String, onBackClick: () -> Unit) {
+fun ChatDetailScreen(
+    chat: Chat,
+    onBackClick: () -> Unit,
+    viewModel: MainViewModel
+) {
     var messageText by remember { mutableStateOf("") }
-    val messages = remember { generateSampleMessages() }
+    val messagesState by viewModel.messageState.collectAsState()
+
+    LaunchedEffect(chat.id) {
+        viewModel.loadMessages(chat.id)
+        viewModel.observeMessages(chat.id)
+    }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = userName)
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
-                            contentDescription = "Назад"
-                        )
-                    }
-                }
-            )
-        },
         bottomBar = {
             // Поле ввода сообщения
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
@@ -114,7 +110,7 @@ fun ChatDetailScreen(userName: String, onBackClick: () -> Unit) {
             reverseLayout = true
         ) {
             items(
-                items = messages.reversed(),
+                items = messagesState.messages.reversed(),
                 key = { message -> message.id }
             ) { message ->
                 MessageBubble(message = message)
@@ -122,37 +118,3 @@ fun ChatDetailScreen(userName: String, onBackClick: () -> Unit) {
         }
     }
 }
-
-// Функция для генерации тестовых сообщений
-fun generateSampleMessages(): List<Message> = listOf(
-    Message(
-        id = "1",
-        text = "Привет! Как дела?",
-        timestamp = "10:25",
-        isFromMe = false,
-        senderId = "user1",
-        chatId = "chat1",
-        isSent = true,
-        isRead = true
-    ),
-    Message(
-        id = "2",
-        text = "Привет! Всё отлично, спасибо! А у тебя как?",
-        timestamp = "10:26",
-        isFromMe = true,
-        senderId = "user2",
-        chatId = "chat1",
-        isSent = true,
-        isRead = true
-    ),
-    Message(
-        id = "3",
-        text = "Тоже всё хорошо! Хочешь встретиться завтра?",
-        timestamp = "10:27",
-        isFromMe = false,
-        senderId = "user1",
-        chatId = "chat1",
-        isSent = true,
-        isRead = true
-    )
-)

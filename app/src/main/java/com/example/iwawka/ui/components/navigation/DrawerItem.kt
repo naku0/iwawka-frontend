@@ -1,6 +1,8 @@
 package com.example.iwawka.ui.components.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationDrawerItem
@@ -20,7 +22,7 @@ val drawerItems = listOf<DrawerItem>(
     DrawerItem("profile", "Профиль", Icons.Default.Person),
     DrawerItem("messages", "Сообщения", Icons.Default.Email),
     DrawerItem("settings", "Настройки", Icons.Default.Settings),
-    DrawerItem("logout", "Выйти", Icons.Default.ExitToApp, isExit = true)
+    DrawerItem("logout", "Выйти", Icons.AutoMirrored.Filled.Logout, isExit = true)
 
 )
 
