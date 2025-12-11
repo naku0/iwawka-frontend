@@ -11,12 +11,11 @@ object Mappers {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
     private val displayDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
+
     fun toDomain(dto: MessageDto, currentUserId: String): Message {
         return Message(
             id = dto.id.toString(),
             text = dto.content,
-            senderId = dto.senderId.toString(),
-            chatId = dto.chatId.toString(),
             timestamp = formatTimestamp(dto.created),
             isFromMe = dto.senderId.toString() == currentUserId,
             isRead = false

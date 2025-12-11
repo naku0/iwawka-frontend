@@ -6,7 +6,8 @@ import com.example.iwawka.domain.repositories.interfaces.MessageRepository
 class GetMessagesUseCase(
     private val messageRepository: MessageRepository
 ) {
-    suspend operator fun invoke(chatId: String): List<Message> {
+
+    suspend operator fun invoke(chatId: String): Result<List<Message>> {
         return messageRepository.getMessages(chatId)
     }
 }

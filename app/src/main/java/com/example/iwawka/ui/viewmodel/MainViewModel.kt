@@ -68,48 +68,75 @@ class MainViewModel(
         }
     }
 
+
     fun loadProfile(userId: String) {
         viewModelScope.launch {
             dispatchProfileAction(ProfileAction.LoadProfile)
             try {
                 val profile = getProfileUseCase(userId)
-                dispatchProfileAction(ProfileAction.ProfileLoaded(profile))
+                profile?.let {
+                    dispatchProfileAction(ProfileAction.ProfileLoaded(it))
+                } ?: dispatchProfileAction(ProfileAction.ProfileLoadError("Профиль не найден"))
             } catch (e: Exception) {
                 dispatchProfileAction(ProfileAction.ProfileLoadError(e.message ?: "Ошибка загрузки"))
             }
         }
     }
 
+
     fun loadChats() {
         viewModelScope.launch {
             dispatchChatAction(ChatAction.LoadChats)
             try {
-                val chats = getChatsUseCase()
-                dispatchChatAction(ChatAction.ChatsLoaded(chats))
+                val result = getChatsUseCase()
+                result.fold(
+                    onSuccess = { chats ->
+                        dispatchChatAction(ChatAction.ChatsLoaded(chats))
+                    },
+                    onFailure = { error ->
+                        dispatchChatAction(ChatAction.ChatLoadError(error.message ?: "Ошибка загрузки чатов"))
+                    }
+                )
             } catch (e: Exception) {
                 dispatchChatAction(ChatAction.ChatLoadError(e.message ?: "Ошибка загрузки чатов"))
             }
         }
     }
 
+
     fun loadMessages(chatId: String) {
         viewModelScope.launch {
             dispatchMessageAction(MessageAction.LoadMessages)
             try {
-                val messages = getMessagesUseCase(chatId)
-                dispatchMessageAction(MessageAction.MessagesLoaded(messages))
+                val result = getMessagesUseCase(chatId)
+                result.fold(
+                    onSuccess = { messages ->
+                        dispatchMessageAction(MessageAction.MessagesLoaded(messages))
+                    },
+                    onFailure = { error ->
+                        dispatchMessageAction(MessageAction.MessageLoadError(error.message ?: "Ошибка загрузки сообщений"))
+                    }
+                )
             } catch (e: Exception) {
                 dispatchMessageAction(MessageAction.MessageLoadError(e.message ?: "Ошибка загрузки сообщений"))
             }
         }
     }
 
+
     fun sendMessage(chatId: String, text: String) {
         viewModelScope.launch {
             dispatchMessageAction(MessageAction.SendMessage)
             try {
-                val message = sendMessageUseCase(chatId, text)
-                dispatchMessageAction(MessageAction.MessageSent(message))
+                val result = sendMessageUseCase(chatId, text)
+                result.fold(
+                    onSuccess = { message ->
+                        dispatchMessageAction(MessageAction.MessageSent(message))
+                    },
+                    onFailure = { error ->
+                        dispatchMessageAction(MessageAction.SendMessageError(error.message ?: "Ошибка отправки"))
+                    }
+                )
             } catch (e: Exception) {
                 dispatchMessageAction(MessageAction.SendMessageError(e.message ?: "Ошибка отправки"))
             }
