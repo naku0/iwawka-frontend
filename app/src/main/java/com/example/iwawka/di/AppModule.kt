@@ -4,6 +4,12 @@ import android.content.Context
 import com.example.iwawka.domain.repositories.impl.ChatRepositoryImpl
 import com.example.iwawka.domain.repositories.impl.MessageRepositoryImpl
 import com.example.iwawka.domain.repositories.impl.ProfileRepositoryImpl
+import com.example.iwawka.domain.usecases.chat.GetChatUseCase
+import com.example.iwawka.domain.usecases.chat.GetChatsUseCase
+import com.example.iwawka.domain.usecases.chat.ObserveChatsUseCase
+import com.example.iwawka.domain.usecases.message.GetMessagesUseCase
+import com.example.iwawka.domain.usecases.message.ObserveMessagesUseCase
+import com.example.iwawka.domain.usecases.message.SendMessageUseCase
 import com.example.iwawka.domain.usecases.profile.GetProfileUseCase
 import com.example.iwawka.domain.usecases.profile.UpdateProfileUseCase
 import com.example.iwawka.model.API.IwawkaApi
@@ -48,8 +54,35 @@ object AppModule {
     private val updateProfileUseCase: UpdateProfileUseCase
         get() = UpdateProfileUseCase(profileRepository)
 
+    private val getChatsUseCase: GetChatsUseCase
+        get() = GetChatsUseCase(chatRepository)
+
+    private val getChatUseCase: GetChatUseCase
+        get() = GetChatUseCase(chatRepository)
+
+    private val observeChatsUseCase: ObserveChatsUseCase
+        get() = ObserveChatsUseCase(chatRepository)
+
+    private val getMessagesUseCase: GetMessagesUseCase
+        get() = GetMessagesUseCase(messageRepository)
+
+    private val sendMessageUseCase: SendMessageUseCase
+        get() = SendMessageUseCase(messageRepository)
+
+    private val observeMessagesUseCase: ObserveMessagesUseCase
+        get() = ObserveMessagesUseCase(messageRepository)
+
     fun provideMainViewModel(): MainViewModel {
-        return MainViewModel(getProfileUseCase, updateProfileUseCase)
+        return MainViewModel(
+            getProfileUseCase,
+            updateProfileUseCase,
+            getChatsUseCase,
+            getChatUseCase,
+            observeChatsUseCase,
+            getMessagesUseCase,
+            sendMessageUseCase,
+            observeMessagesUseCase
+        )
     }
 
     fun provideApi(): IwawkaApi = getApi()
