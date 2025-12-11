@@ -108,9 +108,17 @@ class IwawkaApi(
             }.body()
         }
 
+
     suspend fun deleteMessage(messageId: Int): ApiResponse<EmptyData> =
         executeWithAuthRetry {
             client.delete("$baseUrl/api/message/$messageId") {
+                addAuthHeader()
+            }.body()
+        }
+
+    suspend fun markAsRead(messageId: Int): ApiResponse<EmptyData> =
+        executeWithAuthRetry {
+            client.post("$baseUrl/api/message/$messageId/read") {
                 addAuthHeader()
             }.body()
         }
