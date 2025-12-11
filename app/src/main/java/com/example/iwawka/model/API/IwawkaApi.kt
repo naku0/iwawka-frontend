@@ -25,20 +25,19 @@ import kotlinx.serialization.json.Json
 
 class IwawkaApi(
     private val baseUrl: String = DEFAULT_BASE_URL,
-    private val tokenStorage: TokenStorage? = null,
-    httpClient: HttpClient? = null
+    private val tokenStorage: TokenStorage? = null
 ) {
-
-    private val client: HttpClient = httpClient ?: HttpClient(CIO) {
-        install(HttpTimeout) {
-            requestTimeoutMillis = 30000
-        }
-        
-        defaultRequest {
-            contentType(ContentType.Application.Json)
-            if (tokenStorage != null) {
-                tokenStorage.getAccessToken()?.let { token ->
-                    header(HttpHeaders.Authorization, "Bearer $token")
+    private val client: HttpClient by lazy {
+        HttpClient(CIO) {
+            install(HttpTimeout) {
+                requestTimeoutMillis = 30000
+            }
+            defaultRequest {
+                contentType(ContentType.Application.Json)
+                if (tokenStorage != null) {
+                    tokenStorage.getAccessToken()?.let { token ->
+                        header(HttpHeaders.Authorization, "Bearer $token")
+                    }
                 }
             }
         }
