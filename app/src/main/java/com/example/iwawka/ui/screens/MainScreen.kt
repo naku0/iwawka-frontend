@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,38 +26,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.iwawka.domain.repositories.impl.ChatRepository
-import com.example.iwawka.ui.components.chat.ChatDetailScreen
-import com.example.iwawka.ui.components.common.CounterButton
+import com.example.iwawka.domain.models.Chat
 import com.example.iwawka.ui.components.navigation.AppDrawer
-import com.example.iwawka.ui.components.navigation.drawerItems
+import com.example.iwawka.ui.screens.chat.ChatDetailScreen
 import com.example.iwawka.ui.screens.settings.SettingsScreen
 import com.example.iwawka.ui.screens.messages.MessagesScreen
 import com.example.iwawka.ui.screens.profile.ProfileScreen
+import com.example.iwawka.ui.states.chat.ChatAction
 import com.example.iwawka.ui.theme.DarkColorScheme
 import com.example.iwawka.ui.theme.LightColorScheme
 import com.example.iwawka.ui.theme.LocalAppState
 import com.example.iwawka.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-
+// ui/screens/MainScreen.kt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel
-) {
+fun MainScreen(viewModel: MainViewModel) {
     val appState = LocalAppState.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Состояние для управления экранами
     var currentScreen by remember { mutableStateOf("messages") }
-    var currentChatId by remember { mutableStateOf<String?>(null) }
 
     val profileState by viewModel.profileState.collectAsState()
+    val chatsState by viewModel.chatsState.collectAsState()
 
-    val currentTheme by remember(appState.isDarkTheme) {
-        mutableStateOf(if (appState.isDarkTheme) DarkColorScheme else LightColorScheme)
+    val currentTheme = if (appState.isDarkTheme) DarkColorScheme else LightColorScheme
+
+    LaunchedEffect(Unit) {
+        viewModel.loadProfile("1")
     }
 
     MaterialTheme(colorScheme = currentTheme) {
@@ -66,7 +65,6 @@ fun MainScreen(
                     currentScreen = currentScreen,
                     onItemClick = { screen ->
                         currentScreen = screen
-                        currentChatId = null // Сбрасываем чат при переходе по меню
                         scope.launch { drawerState.close() }
                     },
                     user = profileState.profile?.user
@@ -76,11 +74,16 @@ fun MainScreen(
             Scaffold(
                 topBar = {
                     // Показываем TopAppBar только когда НЕ открыт чат
-                    if (currentChatId == null) {
+                    if (chatsState.selectedChat == null) {
                         TopAppBar(
                             title = {
                                 Text(
-                                    text = drawerItems.find { it.id == currentScreen }?.label ?: "App"
+                                    text = when (currentScreen) {
+                                        "profile" -> "Профиль"
+                                        "settings" -> "Настройки"
+                                        "messages" -> "Сообщения"
+                                        else -> "App"
+                                    }
                                 )
                             },
                             navigationIcon = {
@@ -96,6 +99,12 @@ fun MainScreen(
                                 }
                             }
                         )
+                    } else {
+                        // TopBar для экрана чата
+                        ChatTopBar(
+                            chat = chatsState.selectedChat!!,
+                            onBackClick = { viewModel.dispatchChatAction(ChatAction.SelectChat(null)) }
+                        )
                     }
                 }
             ) { innerPadding ->
@@ -104,11 +113,13 @@ fun MainScreen(
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    // Показываем либо экран чата, либо основной экран
-                    if (currentChatId != null) {
+                    if (chatsState.selectedChat != null) {
                         ChatDetailScreen(
-                            userName = getChatUserName(currentChatId!!),
-                            onBackClick = { currentChatId = null }
+                            chat = chatsState.selectedChat!!,
+                            onBackClick = {
+                                viewModel.dispatchChatAction(ChatAction.SelectChat(null))
+                            },
+                            viewModel = viewModel,
                         )
                     } else {
                         when (currentScreen) {
@@ -116,8 +127,11 @@ fun MainScreen(
                             "settings" -> SettingsScreen()
                             "messages" -> MessagesScreen(
                                 onChatClick = { chatId ->
-                                    currentChatId = chatId
-                                }
+                                    // Находим чат по ID и выбираем его
+                                    val chat = chatsState.chats.find { it.id == chatId }
+                                    chat?.let { viewModel.selectChat(it) }
+                                },
+                                viewModel = viewModel
                             )
                         }
                     }
@@ -127,7 +141,28 @@ fun MainScreen(
     }
 }
 
-// Вспомогательная функция для получения имени пользователя по chatId
-private fun getChatUserName(chatId: String): String {
-    return ChatRepository.getAllChats().find { it.id == chatId }?.userName ?: "Пользователь"
+// TopBar для экрана чата
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChatTopBar(chat: Chat, onBackClick: () -> Unit) {
+    TopAppBar(
+        title = {
+            Column {
+                Text(chat.userName)
+                Text(
+                    text = if (chat.isOnline) "online" else "offline",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Назад"
+                )
+            }
+        }
+    )
 }

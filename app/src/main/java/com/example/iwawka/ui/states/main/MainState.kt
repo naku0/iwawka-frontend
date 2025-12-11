@@ -1,71 +1,59 @@
 package com.example.iwawka.ui.states.main
 
 import com.example.iwawka.domain.models.Message
-import com.example.iwawka.ui.states.AttachmentState
-import com.example.iwawka.ui.states.InputState
-import com.example.iwawka.ui.states.MediaState
-import com.example.iwawka.ui.states.MessageState
-import com.example.iwawka.ui.states.NetworkState
-import com.example.iwawka.ui.states.UiState
+import com.example.iwawka.ui.states.message.MessageState
 
 data class MainState(
-    val currentChatId: String? = null,
-    val messages: MessageState = MessageState.Loading,
-    val input: InputState = InputState(),
-    val ui: UiState = UiState(),
-    val network: NetworkState = NetworkState(),
-    val media: MediaState = MediaState(),
-    val attachments: AttachmentState = AttachmentState()
+    val messageState: MessageState = MessageState(),
+    val inputText: String = "",
+    val replyingTo: String? = null,
+    val isTyping: Boolean = false
 ) {
-    val isLoading: Boolean get() = messages is MessageState.Loading
-    val shouldShowEmptyState: Boolean
-        get() = messages is MessageState.Success && messages.visibleMessages.isEmpty()
-    val canSendMessage: Boolean
-        get() = input.text.isNotBlank() && !isLoading
-
-    fun withMessageSent(message: Message): MainState = copy(
-        input = input.clearForNewMessage(),
-        messages = messages.addMessage(message),
-        network = network.copy(typingUsers = emptySet())
+    fun withMessagesLoaded(messages: List<Message>) = copy(
+        messageState = messageState.copy(
+            messages = messages,
+            isLoading = false,
+            error = null
+        )
     )
 
-    fun withReplyToMessage(messageId: String): MainState = copy(
-        input = input.setReplyTo(messageId),
-        ui = ui.copy(isEditing = true)
+    fun withLoadingError(error: String) = copy(
+        messageState = messageState.copy(
+            isLoading = false,
+            error = error
+        )
     )
 
-    fun withTypingStarted(): MainState = copy(
-        network = network.copy(typingUsers = network.typingUsers + "current_user")
+    fun loadMessages() = copy(
+        messageState = messageState.copy(
+            isLoading = true,
+            error = null
+        )
     )
 
-    fun cancelAllActions(): MainState = copy(
-        input = input.clearAll(),
-        ui = ui.copy(isEditing = false, isSelectionMode = false),
-        messages = messages.clearSelection()
+    fun withMessageSent(message: Message) = copy(
+        messageState = messageState.copy(
+            messages = messageState.messages + message,
+            isSending = false
+        ),
+        inputText = ""
     )
 
-    fun withMessagesLoaded(messages: List<Message>): MainState = copy(
-        messages = MessageState.Success(messages)
+    // Добавляем недостающие методы
+    fun withReplyToMessage(messageId: String) = copy(
+        replyingTo = messageId
     )
 
-    fun withLoadingError(error: String): MainState = copy(
-        messages = MessageState.Error(error)
+    fun withTypingStarted() = copy(
+        isTyping = true
     )
 
-    fun withInputText(text: String): MainState = copy(
-        input = input.copy(text = text)
+    fun cancelAllActions() = copy(
+        replyingTo = null,
+        isTyping = false
     )
 
-    // Дополнительные функции для работы с сообщениями
-    fun selectMessage(id: String): MainState = copy(
-        messages = messages.selectMessage(id)
-    )
-
-    fun removeMessage(id: String): MainState = copy(
-        messages = messages.removeMessage(id)
-    )
-
-    fun loadMoreMessages(oldMessages: List<Message>): MainState = copy(
-        messages = messages.prependMessages(oldMessages)
+    fun withInputText(text: String) = copy(
+        inputText = text
     )
 }

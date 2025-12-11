@@ -1,7 +1,7 @@
 // data/repositories/ProfileRepositoryImpl.kt
 package com.example.iwawka.data.repositories
 
-import com.example.iwawka.clientStorage.TempStorage
+import com.example.iwawka.model.clientStorage.TempStorage
 import com.example.iwawka.domain.models.Profile
 import com.example.iwawka.domain.repositories.interfaces.ProfileRepository
 
