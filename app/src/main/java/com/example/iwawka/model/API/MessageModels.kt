@@ -1,4 +1,4 @@
-package com.example.iwawka.model.API
+package com.example.iwawka.model.api
 
 import kotlinx.serialization.Serializable
 

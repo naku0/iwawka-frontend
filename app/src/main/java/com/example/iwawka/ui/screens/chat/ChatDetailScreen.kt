@@ -12,18 +12,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,12 +53,16 @@ fun ChatDetailScreen(
         viewModel.observeMessages(chat.id)
     }
 
+    val cs = MaterialTheme.colorScheme
+    val fieldShape = RoundedCornerShape(12.dp)
+
     Scaffold(
+        containerColor = cs.background,
         bottomBar = {
-            // Поле ввода сообщения
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(cs.background)
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -66,37 +70,50 @@ fun ChatDetailScreen(
                     value = messageText,
                     onValueChange = { messageText = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Введите сообщение...") },
-                    shape = MaterialTheme.shapes.large,
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
+                    placeholder = {
+                        Text(
+                            text = "Введите сообщение...",
+                            color = cs.onSurface.copy(alpha = 0.5f)
+                        )
+                    },
+                    shape = fieldShape,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = cs.surface,
+                        unfocusedContainerColor = cs.surface,
+                        focusedBorderColor = cs.primary,
+                        unfocusedBorderColor = cs.outline,
+                        cursorColor = cs.primary,
+                        focusedTextColor = cs.onSurface,
+                        unfocusedTextColor = cs.onSurface
                     )
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                IconButton(
-                    onClick = {
-                        // TODO: Отправка сообщения
-                        messageText = ""
-                    },
-                    enabled = messageText.isNotBlank(),
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape
-                        )
+                // Кнопка отправки (минимализм + корректный disabled)
+                Surface(
+                    shape = CircleShape,
+                    color = if (messageText.isNotBlank()) cs.primary else cs.surface,
+                    tonalElevation = 0.dp,
+                    shadowElevation = 0.dp
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = "Отправить",
-                        tint = if (messageText.isNotBlank()) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.outline
-                    )
+                    IconButton(
+                        onClick = {
+                            // TODO: Отправка сообщения
+                            messageText = ""
+                        },
+                        enabled = messageText.isNotBlank(),
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Send,
+                            contentDescription = "Отправить",
+                            tint = if (messageText.isNotBlank())
+                                cs.onPrimary
+                            else
+                                cs.onSurface.copy(alpha = 0.35f)
+                        )
+                    }
                 }
             }
         }
@@ -104,6 +121,7 @@ fun ChatDetailScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(cs.background)
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),

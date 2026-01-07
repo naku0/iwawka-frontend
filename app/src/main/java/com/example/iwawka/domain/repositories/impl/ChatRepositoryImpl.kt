@@ -2,8 +2,8 @@ package com.example.iwawka.domain.repositories.impl
 
 import com.example.iwawka.domain.models.Chat
 import com.example.iwawka.domain.repositories.interfaces.ChatRepository
-import com.example.iwawka.model.API.CreateChatRequest
-import com.example.iwawka.model.API.IwawkaApi
+import com.example.iwawka.model.api.CreateChatRequest
+import com.example.iwawka.model.api.IwawkaApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

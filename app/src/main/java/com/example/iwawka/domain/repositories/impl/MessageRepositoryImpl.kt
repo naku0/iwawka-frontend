@@ -2,22 +2,24 @@ package com.example.iwawka.domain.repositories.impl
 
 import com.example.iwawka.domain.models.Message
 import com.example.iwawka.domain.repositories.interfaces.MessageRepository
-import com.example.iwawka.model.API.IwawkaApi
-import com.example.iwawka.model.API.MessageDto
-import com.example.iwawka.model.API.SendMessageRequest
+import com.example.iwawka.model.api.IwawkaApi
+import com.example.iwawka.model.api.MessageDto
+import com.example.iwawka.model.api.SendMessageRequest
+import com.example.iwawka.model.clientStorage.SessionStore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 class MessageRepositoryImpl(
     private val api: IwawkaApi,
-    private val currentUserId: String
+    private val sessionStore: SessionStore
 ) : MessageRepository {
 
     private val displayDateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    private fun myId(): String = sessionStore.myUserId.orEmpty()
 
     private fun formatTimestamp(created: String): String {
         return try {
@@ -30,11 +32,12 @@ class MessageRepositoryImpl(
     }
 
     private fun toDomain(dto: MessageDto): Message {
+        val me = myId()
         return Message(
             id = dto.id.toString(),
             text = dto.content,
             timestamp = formatTimestamp(dto.created),
-            isFromMe = dto.senderId.toString() == currentUserId,
+            isFromMe = (me.isNotEmpty() && dto.senderId.toString() == me),
             isRead = false
         )
     }

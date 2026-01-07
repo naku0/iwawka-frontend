@@ -1,5 +1,6 @@
 package com.example.iwawka.ui.components.common
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,9 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.iwawka.ui.theme.LocalAppState
+import com.example.iwawka.ui.theme.ThemeMode
+
 @Composable
 fun ThemeSwitcher() {
     val appState = LocalAppState.current
+    val isDark = when (appState.themeMode) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
 
     Row(
         modifier = Modifier
@@ -29,9 +37,9 @@ fun ThemeSwitcher() {
         )
 
         Switch(
-            checked = appState.isDarkTheme,
-            onCheckedChange = { isDark ->
-                appState.isDarkTheme = isDark
+            checked = isDark,
+            onCheckedChange = { checked ->
+                appState.themeMode = if (checked) ThemeMode.DARK else ThemeMode.LIGHT
             }
         )
     }

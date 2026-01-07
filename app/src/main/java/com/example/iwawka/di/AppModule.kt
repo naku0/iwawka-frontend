@@ -12,17 +12,20 @@ import com.example.iwawka.domain.usecases.message.ObserveMessagesUseCase
 import com.example.iwawka.domain.usecases.message.SendMessageUseCase
 import com.example.iwawka.domain.usecases.profile.GetProfileUseCase
 import com.example.iwawka.domain.usecases.profile.UpdateProfileUseCase
-import com.example.iwawka.model.API.IwawkaApi
+import com.example.iwawka.model.api.IwawkaApi
 import com.example.iwawka.model.auth.TokenStorage
+import com.example.iwawka.model.clientStorage.SessionStore
 import com.example.iwawka.ui.viewmodel.MainViewModel
 
 object AppModule {
     private var tokenStorage: TokenStorage? = null
     private var api: IwawkaApi? = null
 
-    fun initialize(context: Context, baseUrl: String = "https://api.example.com") {
+    private val sessionStore: SessionStore = SessionStore()
+
+    fun initialize(context: Context, baseUrl: String) {
         tokenStorage = TokenStorage(context)
-        api = IwawkaApi(baseUrl, tokenStorage)
+        api = IwawkaApi(tokenStorage, baseUrl)
     }
 
     private fun getApi(): IwawkaApi {
@@ -43,7 +46,7 @@ object AppModule {
         get() = ProfileRepositoryImpl(getApi())
 
     private val messageRepository: com.example.iwawka.domain.repositories.interfaces.MessageRepository
-        get() = MessageRepositoryImpl(getApi(), currentUserId)
+        get() = MessageRepositoryImpl(getApi(), sessionStore)
 
     private val chatRepository: com.example.iwawka.domain.repositories.interfaces.ChatRepository
         get() = ChatRepositoryImpl(getApi())
@@ -88,4 +91,8 @@ object AppModule {
     fun provideApi(): IwawkaApi = getApi()
     
     fun provideTokenStorage(): TokenStorage = getTokenStorage()
+
+    fun isLoggedIn(): Boolean = provideTokenStorage().hasTokens()
+
+    fun logout(){provideTokenStorage().clearTokens()}
 }

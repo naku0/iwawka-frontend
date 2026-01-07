@@ -1,4 +1,4 @@
-package com.example.iwawka.model.API
+package com.example.iwawka.model.api
 
 import com.example.iwawka.model.auth.TokenStorage
 import com.example.iwawka.model.dto.LoginRequest
@@ -7,10 +7,12 @@ import com.example.iwawka.model.dto.LogoutRequest
 import com.example.iwawka.model.dto.LogoutResponse
 import com.example.iwawka.model.dto.RefreshTokenRequest
 import com.example.iwawka.model.dto.RegisterRequest
+import com.example.iwawka.model.dto.UserDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
@@ -21,16 +23,25 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class IwawkaApi(
-    private val baseUrl: String = DEFAULT_BASE_URL,
-    private val tokenStorage: TokenStorage? = null
+    private val tokenStorage: TokenStorage?,
+    private val baseUrl: String
 ) {
-    private val client: HttpClient by lazy {
-        HttpClient(CIO) {
+    private val client = HttpClient(CIO){
             install(HttpTimeout) {
                 requestTimeoutMillis = 30000
+            }
+            install(ContentNegotiation){
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                        encodeDefaults = true
+                    }
+                )
             }
             defaultRequest {
                 contentType(ContentType.Application.Json)
@@ -40,7 +51,6 @@ class IwawkaApi(
                     }
                 }
             }
-        }
     }
 
     private suspend fun HttpRequestBuilder.addAuthHeader() {
@@ -54,6 +64,7 @@ class IwawkaApi(
     // Auth endpoints
     suspend fun register(request: RegisterRequest): ApiResponse<LoginResponse> =
         client.post("$baseUrl/api/auth/register") {
+            contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
 
@@ -77,6 +88,11 @@ class IwawkaApi(
     }
 
     // Protected endpoints
+
+    suspend fun getMe(): ApiResponse<UserDto> =
+        client.get("$baseUrl/api/user/me") {
+            addAuthHeader()
+        }.body()
     suspend fun sendMessage(request: SendMessageRequest): ApiResponse<EmptyData> =
         client.post("$baseUrl/api/message") {
             setBody(request)
@@ -128,9 +144,5 @@ class IwawkaApi(
         } catch (e: Exception) {
             false
         }
-    }
-
-    companion object {
-        private const val DEFAULT_BASE_URL = "https://api.example.com"
     }
 }

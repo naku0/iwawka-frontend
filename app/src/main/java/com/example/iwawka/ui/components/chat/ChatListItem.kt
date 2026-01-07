@@ -14,8 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,96 +31,96 @@ fun ChatListItem(
     chat: Chat,
     onChatClick: () -> Unit
 ) {
-    Card(
+    val cs = MaterialTheme.colorScheme
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onChatClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, cs.outline, RoundedCornerShape(12.dp))
+            .clickable { onChatClick() }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // Avatar
+        Box(
+            modifier = Modifier.size(56.dp),
+            contentAlignment = Alignment.BottomEnd
         ) {
-            // Аватар
             Box(
-                modifier = Modifier.size(56.dp),
-                contentAlignment = Alignment.BottomEnd
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(cs.primary.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = chat.userName.take(2).uppercase(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                if (chat.isOnline) {
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = chat.userName,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = chat.timestamp,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
-                    text = chat.lastMessage,
+                    text = chat.userName.take(2).uppercase(),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    color = cs.primary,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
-            if (chat.unreadCount > 0) {
-                Spacer(modifier = Modifier.width(8.dp))
+            if (chat.isOnline) {
                 Box(
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(12.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = chat.unreadCount.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                        .background(cs.primary)
+                        .border(2.dp, cs.surface, CircleShape) // чтобы точка читалась на аватарке
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = chat.userName,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = cs.onSurface
+                )
+
+                Text(
+                    text = chat.timestamp,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = cs.onSurface.copy(alpha = 0.6f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = chat.lastMessage,
+                style = MaterialTheme.typography.bodyMedium,
+                color = cs.onSurface.copy(alpha = 0.7f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        if (chat.unreadCount > 0) {
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(cs.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = chat.unreadCount.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = cs.onPrimary,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,15 +33,33 @@ fun DrawerItem(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
+    val cs = MaterialTheme.colorScheme
+
     NavigationDrawerItem(
-        label = {Text(item.label)},
+        label = {
+            Text(
+                text = item.label,
+                color = if (isSelected) cs.primary else cs.onSurface
+            )
+        },
         selected = isSelected,
         onClick = onClick,
-        icon = { Icon(
-            imageVector = item.icon,
-            contentDescription = item.label)
+        icon = {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = item.label,
+                tint = if (isSelected) cs.primary else cs.onSurface
+            )
         },
+        colors = androidx.compose.material3.NavigationDrawerItemDefaults.colors(
+            selectedContainerColor = cs.primary.copy(alpha = 0.08f),
+            unselectedContainerColor = cs.surface,
+            selectedIconColor = cs.primary,
+            unselectedIconColor = cs.onSurface,
+            selectedTextColor = cs.primary,
+            unselectedTextColor = cs.onSurface
+        ),
         modifier = modifier
     )
 }

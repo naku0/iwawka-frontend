@@ -1,58 +1,56 @@
 package com.example.iwawka.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import kotlin.math.pow
 
-val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    onPrimary = Color.White
-)
-
-val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    onPrimary = Color.Black
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
+private fun Color.isLight(): Boolean {
+    // относительная яркость (приближенно, но нормально для выбора onPrimary)
+    fun c(x: Float) = if (x <= 0.04045f) x / 12.92f else ((x + 0.055f) / 1.055f).pow(2.4f)
+    val r = c(red); val g = c(green); val b = c(blue)
+    val luminance = 0.2126f * r + 0.7152f * g + 0.0722f * b
+    return luminance > 0.5f
+}
 
 @Composable
 fun IwawkaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean,
+    accent: Color,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val onAccent = if (accent.isLight()) Color.Black else Color.White
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val light = lightColorScheme(
+        primary = accent,
+        onPrimary = onAccent,
+
+        background = Color.White,
+        onBackground = Color.Black,
+
+        surface = Color.White,
+        onSurface = Color.Black,
+
+        outline = Color.Black.copy(alpha = 0.10f),
+    )
+
+    val dark = darkColorScheme(
+        primary = accent,
+        onPrimary = onAccent,
+
+        background = Color.Black,
+        onBackground = Color.White,
+
+        surface = Color.Black,
+        onSurface = Color.White,
+
+        outline = Color.White.copy(alpha = 0.10f),
+    )
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = if (darkTheme) dark else light,
         typography = Typography,
         content = content
     )

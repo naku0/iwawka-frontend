@@ -1,10 +1,8 @@
-package com.example.iwawka.model.API
+package com.example.iwawka.model.api
 
 import com.example.iwawka.domain.models.Message
 import com.example.iwawka.domain.models.Profile
-import com.example.iwawka.domain.models.User
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 object Mappers {

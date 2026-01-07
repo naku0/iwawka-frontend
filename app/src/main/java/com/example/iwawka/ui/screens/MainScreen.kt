@@ -33,16 +33,16 @@ import com.example.iwawka.ui.screens.settings.SettingsScreen
 import com.example.iwawka.ui.screens.messages.MessagesScreen
 import com.example.iwawka.ui.screens.profile.ProfileScreen
 import com.example.iwawka.ui.states.chat.ChatAction
-import com.example.iwawka.ui.theme.DarkColorScheme
-import com.example.iwawka.ui.theme.LightColorScheme
 import com.example.iwawka.ui.theme.LocalAppState
 import com.example.iwawka.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 // ui/screens/MainScreen.kt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
-    val appState = LocalAppState.current
+fun MainScreen(
+    viewModel: MainViewModel,
+    onLogout: () -> Unit
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -51,89 +51,81 @@ fun MainScreen(viewModel: MainViewModel) {
     val profileState by viewModel.profileState.collectAsState()
     val chatsState by viewModel.chatsState.collectAsState()
 
-    val currentTheme = if (appState.isDarkTheme) DarkColorScheme else LightColorScheme
-
     LaunchedEffect(Unit) {
         viewModel.loadProfile("1")
     }
 
-    MaterialTheme(colorScheme = currentTheme) {
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                AppDrawer(
-                    currentScreen = currentScreen,
-                    onItemClick = { screen ->
-                        currentScreen = screen
-                        scope.launch { drawerState.close() }
-                    },
-                    user = profileState.profile?.user
-                )
-            }
-        ) {
-            Scaffold(
-                topBar = {
-                    // Показываем TopAppBar только когда НЕ открыт чат
-                    if (chatsState.selectedChat == null) {
-                        TopAppBar(
-                            title = {
-                                Text(
-                                    text = when (currentScreen) {
-                                        "profile" -> "Профиль"
-                                        "settings" -> "Настройки"
-                                        "messages" -> "Сообщения"
-                                        else -> "App"
-                                    }
-                                )
-                            },
-                            navigationIcon = {
-                                IconButton(
-                                    onClick = {
-                                        scope.launch { drawerState.open() }
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Menu,
-                                        contentDescription = "Open menu"
-                                    )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            AppDrawer(
+                currentScreen = currentScreen,
+                onItemClick = { screen ->
+                    currentScreen = screen
+                    scope.launch { drawerState.close() }
+                },
+                user = profileState.profile?.user,
+                onLogout = onLogout
+            )
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                if (chatsState.selectedChat == null) {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = when (currentScreen) {
+                                    "profile" -> "Профиль"
+                                    "settings" -> "Настройки"
+                                    "messages" -> "Сообщения"
+                                    else -> "App"
                                 }
-                            }
-                        )
-                    } else {
-                        // TopBar для экрана чата
-                        ChatTopBar(
-                            chat = chatsState.selectedChat!!,
-                            onBackClick = { viewModel.dispatchChatAction(ChatAction.SelectChat(null)) }
-                        )
-                    }
-                }
-            ) { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    if (chatsState.selectedChat != null) {
-                        ChatDetailScreen(
-                            chat = chatsState.selectedChat!!,
-                            onBackClick = {
-                                viewModel.dispatchChatAction(ChatAction.SelectChat(null))
-                            },
-                            viewModel = viewModel,
-                        )
-                    } else {
-                        when (currentScreen) {
-                            "profile" -> ProfileScreen(viewModel = viewModel)
-                            "settings" -> SettingsScreen()
-                            "messages" -> MessagesScreen(
-                                onChatClick = { chatId ->
-                                    // Находим чат по ID и выбираем его
-                                    val chat = chatsState.chats.find { it.id == chatId }
-                                    chat?.let { viewModel.selectChat(it) }
-                                },
-                                viewModel = viewModel
                             )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { scope.launch { drawerState.open() } }
+                            ) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            }
                         }
+                    )
+                } else {
+                    ChatTopBar(
+                        chat = chatsState.selectedChat!!,
+                        onBackClick = {
+                            viewModel.dispatchChatAction(ChatAction.SelectChat(null))
+                        }
+                    )
+                }
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                if (chatsState.selectedChat != null) {
+                    ChatDetailScreen(
+                        chat = chatsState.selectedChat!!,
+                        onBackClick = {
+                            viewModel.dispatchChatAction(ChatAction.SelectChat(null))
+                        },
+                        viewModel = viewModel,
+                    )
+                } else {
+                    when (currentScreen) {
+                        "profile" -> ProfileScreen(viewModel)
+                        "settings" -> SettingsScreen()
+                        "messages" -> MessagesScreen(
+                            onChatClick = { chatId ->
+                                chatsState.chats
+                                    .find { it.id == chatId }
+                                    ?.let(viewModel::selectChat)
+                            },
+                            viewModel = viewModel
+                        )
                     }
                 }
             }
@@ -152,7 +144,7 @@ private fun ChatTopBar(chat: Chat, onBackClick: () -> Unit) {
                 Text(
                     text = if (chat.isOnline) "online" else "offline",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
         },
