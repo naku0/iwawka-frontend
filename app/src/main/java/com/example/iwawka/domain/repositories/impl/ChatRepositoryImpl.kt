@@ -13,9 +13,23 @@ class ChatRepositoryImpl(
 ) : ChatRepository {
 
     override suspend fun getChats(): Result<List<Chat>> {
-        // Note: API doesn't have getChats endpoint, so this would need to be implemented
-        // For now, returning empty list or you might want to cache chats locally
-        return Result.success(emptyList())
+        return try {
+            val resp = api.getChats()
+            if (resp.success){
+                val chats = resp.data.map {dto ->
+                    Chat(
+                        id = dto.id.toString(),
+                        userName = dto.name,
+                        isOnline = dto.isOnline
+                    )
+                }
+                Result.success(chats)
+            } else {
+                Result.failure(java.lang.Exception("Failed to get chats"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     override suspend fun getChat(chatId: String): Result<Chat> {

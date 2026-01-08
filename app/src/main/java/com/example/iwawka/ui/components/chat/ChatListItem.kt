@@ -87,16 +87,17 @@ fun ChatListItem(
                     fontWeight = FontWeight.Medium,
                     color = cs.onSurface
                 )
-
+                /*
                 Text(
                     text = chat.timestamp,
                     style = MaterialTheme.typography.bodySmall,
                     color = cs.onSurface.copy(alpha = 0.6f)
                 )
+                 */
             }
 
             Spacer(modifier = Modifier.height(4.dp))
-
+            /*
             Text(
                 text = chat.lastMessage,
                 style = MaterialTheme.typography.bodyMedium,
@@ -104,8 +105,9 @@ fun ChatListItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+             */
         }
-
+/*
         if (chat.unreadCount > 0) {
             Spacer(modifier = Modifier.width(8.dp))
             Box(
@@ -123,5 +125,6 @@ fun ChatListItem(
                 )
             }
         }
+ */
     }
 }

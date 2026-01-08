@@ -17,3 +17,10 @@ data class MessageDto(
     val senderId: Int
 )
 
+@Serializable
+data class ChatDto(
+    val id: Int,
+    val name: String,
+    val isOnline: Boolean
+)
+

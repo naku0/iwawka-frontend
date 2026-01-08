@@ -121,7 +121,7 @@ fun MainScreen(
                         "messages" -> MessagesScreen(
                             onChatClick = { chatId ->
                                 chatsState.chats
-                                    .find { it.id == chatId }
+                                    .find { it.id.toString() == chatId }
                                     ?.let(viewModel::selectChat)
                             },
                             viewModel = viewModel

@@ -1,6 +1,6 @@
 package com.example.iwawka.domain.models
 
-data class Chat(
+data class Group(
     val id: String,
     val userName: String,
     val lastMessage: String,
@@ -8,4 +8,10 @@ data class Chat(
     val unreadCount: Int = 0,
     val avatarUrl: String? = null,
     val isOnline: Boolean = false
+)
+
+data class Chat(
+    val id: String,
+    val userName: String,
+    val isOnline: Boolean
 )

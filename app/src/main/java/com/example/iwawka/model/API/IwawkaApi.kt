@@ -108,6 +108,11 @@ class IwawkaApi(
             addAuthHeader()
         }.body()
 
+    suspend fun getChats(): ApiResponse<List<ChatDto>> =
+        client.get("$baseUrl/api/chat"){
+            addAuthHeader()
+        }.body()
+
     suspend fun markAsRead(messageId: Int): ApiResponse<EmptyData> =
         client.post("$baseUrl/api/message/$messageId/read") {
             addAuthHeader()

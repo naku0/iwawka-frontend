@@ -41,66 +41,6 @@ object TempStorage {
         return "1"
     }
 
-    private val sampleChats = listOf(
-        Chat(
-            id = "1",
-            userName = "Анна Петрова",
-            lastMessage = "Привет! Как дела?",
-            timestamp = "10:30",
-            unreadCount = 2,
-            isOnline = true
-        ),
-        Chat(
-            id = "2",
-            userName = "Иван Сидоров",
-            lastMessage = "Завтра встреча в 15:00",
-            timestamp = "09:15",
-            unreadCount = 0,
-            isOnline = false
-        ),
-        Chat(
-            id = "3",
-            userName = "Мария Иванова",
-            lastMessage = "Спасибо за помощь!",
-            timestamp = "Вчера",
-            unreadCount = 1,
-            isOnline = true
-        ),
-        Chat(
-            id = "4",
-            userName = "Алексей Козлов",
-            lastMessage = "Отправил тебе файл",
-            timestamp = "Вчера",
-            unreadCount = 0,
-            isOnline = false
-        ),
-        Chat(
-            id = "5",
-            userName = "Екатерина Смирнова",
-            lastMessage = "Жду твоего ответа",
-            timestamp = "21 окт",
-            unreadCount = 3,
-            isOnline = true
-        )
-    )
-
-    suspend fun getChats(): List<Chat> {
-        delay(500) // имитация загрузки
-        return sampleChats
-    }
-
-    suspend fun getChat(chatId: String): Chat? {
-        delay(300)
-        return sampleChats.find { it.id == chatId }
-    }
-
-    fun observeChats(): Flow<List<Chat>> = flow {
-        while (true) {
-            emit(sampleChats)
-            delay(10000) // обновляем каждые 10 секунд (для демо)
-        }
-    }
-
     private val messages = mutableMapOf<String, MutableList<Message>>().apply {
         put("1", mutableListOf(
             Message(

@@ -110,24 +110,28 @@ fun MessagesScreen(
                 }
 
                 else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(
-                            items = chatsState.chats.filter {
-                                it.userName.contains(searchText, ignoreCase = true) ||
-                                        it.lastMessage.contains(searchText, ignoreCase = true)
-                            },
-                            key = { it.id }
-                        ) { chat ->
-                            ChatListItem(
-                                chat = chat,
-                                onChatClick = {
-                                    onChatClick(chat.id)
-                                    viewModel.selectChat(chat)
-                                }
-                            )
+                    val filteredChats = chatsState.chats.filter {
+                        it.userName.contains(searchText, ignoreCase = true)
+                    }
+                    if (filteredChats.isEmpty()) {
+                        EmptyChatsState(searchText = searchText)
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                items = filteredChats,
+                                key = { it.id }
+                            ) { chat ->
+                                ChatListItem(
+                                    chat = chat,
+                                    onChatClick = {
+                                        onChatClick(chat.id)
+                                        viewModel.selectChat(chat)
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -135,3 +139,41 @@ fun MessagesScreen(
         }
     }
 }
+
+
+@Composable
+private fun EmptyChatsState(searchText: String) {
+    val cs = MaterialTheme.colorScheme
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 48.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = if (searchText.isBlank())
+                    "Что-то тут пусто 👀"
+                else
+                    "Ничего не найдено",
+                style = MaterialTheme.typography.titleMedium,
+                color = cs.onSurface.copy(alpha = 0.8f)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = if (searchText.isBlank())
+                    "Начните новый диалог или подождите сообщения"
+                else
+                    "Попробуйте изменить запрос",
+                style = MaterialTheme.typography.bodyMedium,
+                color = cs.onSurface.copy(alpha = 0.6f)
+            )
+        }
+    }
+}
+
