@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,40 +44,50 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            var savedThemeMode by rememberSaveable {
-                mutableStateOf(ThemeMode.SYSTEM)
+            var savedThemeMode by rememberSaveable { mutableStateOf(ThemeMode.SYSTEM) }
+            var savedAccentArgb by rememberSaveable { mutableIntStateOf(androidx.compose.ui.graphics.Color.Black.toArgb()) }
+            var savedRecentAccents by rememberSaveable { mutableStateOf(listOf<Int>()) }
+
+            val appState = remember {
+                AppState().also {
+                    it.themeMode = savedThemeMode
+                    it.accentArgb = savedAccentArgb
+                    it.recentAccents.clear()
+                    it.recentAccents.addAll(savedRecentAccents)
+                }
             }
-            var savedAccentArgb by rememberSaveable {
-                mutableIntStateOf(androidx.compose.ui.graphics.Color.Black.toArgb())
+
+            // сохраняем изменения из appState -> saved*
+            LaunchedEffect(appState.themeMode) {
+                savedThemeMode = appState.themeMode
+            }
+            LaunchedEffect(appState.accentArgb) {
+                appState.pushRecent(appState.accentArgb)
+                savedAccentArgb = appState.accentArgb
+                savedRecentAccents = appState.recentAccents.toList()
             }
 
-            val appState = remember {AppState()}
-
-            LaunchedEffect(savedThemeMode) { appState.themeMode = savedThemeMode }
-            LaunchedEffect(savedAccentArgb) { appState.accentArgb = savedAccentArgb }
-
-            LaunchedEffect(appState.themeMode) { savedThemeMode = appState.themeMode }
-            LaunchedEffect(appState.accentArgb) { savedAccentArgb = appState.accentArgb }
+            val darkTheme = when (appState.themeMode) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.DARK -> true
+                ThemeMode.LIGHT -> false
+            }
 
             CompositionLocalProvider(LocalAppState provides appState) {
-                LaunchedEffect(appState.themeMode) { savedThemeMode = appState.themeMode }
-                LaunchedEffect(appState.accentArgb) { savedAccentArgb = appState.accentArgb }
-
-                val darkTheme = when (appState.themeMode) {
-                    ThemeMode.SYSTEM -> isSystemInDarkTheme()
-                    ThemeMode.DARK -> true
-                    ThemeMode.LIGHT -> false
-                }
-
                 IwawkaTheme(
                     darkTheme = darkTheme,
                     accent = appState.accentColor
                 ) {
-                    AppRoot()
+                    // ВАЖНО: корневой Surface задаёт фон всему приложению
+                    androidx.compose.material3.Surface(
+                        modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        AppRoot()
+                    }
                 }
             }
         }
-
 
     }
 }

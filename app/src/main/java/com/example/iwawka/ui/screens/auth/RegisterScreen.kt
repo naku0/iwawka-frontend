@@ -217,7 +217,7 @@ fun RegisterScreen(
                 Text(
                     text = errorMessage,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = cs.onSurface,
+                    color = cs.error,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )

@@ -15,6 +15,14 @@ class AppState {
 
     var accentArgb by mutableIntStateOf(Color.Black.toArgb())
     val accentColor: Color get() = Color(accentArgb)
+
+    val recentAccents= mutableListOf<Int>()
+
+    fun pushRecent(argb: Int, limit: Int = 6){
+        recentAccents.removeAll{it == argb}
+        recentAccents.add(0, argb)
+        while (recentAccents.size > limit) recentAccents.removeLast()
+    }
 }
 
 val LocalAppState = staticCompositionLocalOf { AppState() }

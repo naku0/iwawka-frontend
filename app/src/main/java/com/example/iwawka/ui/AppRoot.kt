@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppRoot() {
     val nav = rememberNavState(
-        start = Screen.Login
+        start = if(AppModule.isLoggedIn()) Screen.Main else Screen.Login
     )
 
     val api = remember { AppModule.provideApi() }

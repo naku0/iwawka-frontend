@@ -1,5 +1,6 @@
 package com.example.iwawka.ui.screens.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -69,6 +70,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(cs.background)
             .padding(24.dp),
         verticalArrangement = Arrangement.Center
     ) {
@@ -204,7 +206,7 @@ fun LoginScreen(
                 Text(
                     text = errorMessage,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = cs.onSurface,
+                    color = cs.error,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )

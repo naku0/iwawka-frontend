@@ -36,7 +36,6 @@ import com.example.iwawka.ui.states.chat.ChatAction
 import com.example.iwawka.ui.theme.LocalAppState
 import com.example.iwawka.ui.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-// ui/screens/MainScreen.kt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -70,6 +69,7 @@ fun MainScreen(
         }
     ) {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 if (chatsState.selectedChat == null) {
                     TopAppBar(

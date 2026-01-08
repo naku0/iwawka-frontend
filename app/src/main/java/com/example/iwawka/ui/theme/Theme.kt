@@ -34,6 +34,11 @@ fun IwawkaTheme(
         onSurface = Color.Black,
 
         outline = Color.Black.copy(alpha = 0.10f),
+
+        error = Color(0xFFDC2626),
+        onError = Color.White,
+        errorContainer = Color(0xFFFEE2E2),
+        onErrorContainer = Color(0xFF7F1D1D)
     )
 
     val dark = darkColorScheme(
@@ -47,6 +52,11 @@ fun IwawkaTheme(
         onSurface = Color.White,
 
         outline = Color.White.copy(alpha = 0.10f),
+
+        error = Color(0xFFF87171),
+        onError = Color.Black,
+        errorContainer = Color(0xFF7F1D1D),
+        onErrorContainer = Color(0xFFFECACA)
     )
 
     MaterialTheme(
