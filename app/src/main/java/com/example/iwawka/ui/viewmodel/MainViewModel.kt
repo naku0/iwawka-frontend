@@ -1,4 +1,3 @@
-// ui/viewmodel/MainViewModel.kt
 package com.example.iwawka.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -24,6 +23,7 @@ import com.example.iwawka.ui.states.chat.ChatReducer
 import com.example.iwawka.ui.states.message.MessageAction
 import com.example.iwawka.ui.states.message.MessageReducer
 import com.example.iwawka.ui.states.message.MessageState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
 
 class MainViewModel(
@@ -49,6 +49,9 @@ class MainViewModel(
     private val messageReducer = MessageReducer()
     private val _messagesState = MutableStateFlow(MessageState())
     val messageState: StateFlow<MessageState> = _messagesState.asStateFlow()
+
+    private var observeMessagesJob: Job? = null
+    private var observingChatId: String? = null
 
     fun dispatchProfileAction(action: ProfileAction) {
         _profileState.update { currentState ->
@@ -144,11 +147,23 @@ class MainViewModel(
     }
 
     fun observeMessages(chatId: String) {
-        viewModelScope.launch {
+        dispatchMessageAction(MessageAction.Clear)
+        observeMessagesJob?.cancel()
+        observingChatId = chatId
+        observeMessagesJob = viewModelScope.launch {
             observeMessagesUseCase(chatId).collect { messages ->
-                dispatchMessageAction(MessageAction.MessagesLoaded(messages))
+                if (observingChatId == chatId) {
+                    dispatchMessageAction(MessageAction.MessagesLoaded(messages))
+                }
             }
         }
+    }
+
+    fun stopObservingMessages(){
+        observingChatId = null
+        observeMessagesJob?.cancel()
+        observeMessagesJob = null
+        dispatchMessageAction(MessageAction.Clear)
     }
 
     fun selectChat(chat: com.example.iwawka.domain.models.Chat) {

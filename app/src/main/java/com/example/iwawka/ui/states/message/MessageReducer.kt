@@ -44,6 +44,13 @@ class MessageReducer {
                     error = null
                 )
             }
+            is MessageAction.Clear -> {
+                currentState.copy(
+                    messages = emptyList(),
+                    isLoading = false,
+                    error = null
+                )
+            }
         }
     }
 }

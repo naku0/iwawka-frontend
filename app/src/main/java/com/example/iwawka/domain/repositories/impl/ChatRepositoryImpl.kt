@@ -19,7 +19,11 @@ class ChatRepositoryImpl(
                 val chats = resp.data.map {dto ->
                     Chat(
                         id = dto.id.toString(),
-                        userName = dto.name,
+                        userName = dto.userName,
+                        timestamp = dto.timestamp,
+                        unreadCount = dto.unreadCount,
+                        avatarUrl = dto.avatarUrl,
+                        lastMessage = dto.lastMessage,
                         isOnline = dto.isOnline
                     )
                 }

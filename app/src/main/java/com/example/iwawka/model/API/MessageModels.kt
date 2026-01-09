@@ -19,8 +19,12 @@ data class MessageDto(
 
 @Serializable
 data class ChatDto(
-    val id: Int,
-    val name: String,
-    val isOnline: Boolean
+    val id: String,
+    val userName: String,
+    val lastMessage: String,
+    val timestamp: String,
+    val unreadCount: Int = 0,
+    val avatarUrl: String? = null,
+    val isOnline: Boolean = false
 )
 

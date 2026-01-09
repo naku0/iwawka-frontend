@@ -10,4 +10,5 @@ sealed class MessageAction {
     data class MessageSent(val message: Message) : MessageAction()
     data class SendMessageError(val error: String) : MessageAction()
     object ClearError : MessageAction()
+    object Clear : MessageAction()
 }

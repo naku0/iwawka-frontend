@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +52,12 @@ fun ChatDetailScreen(
     LaunchedEffect(chat.id) {
         viewModel.loadMessages(chat.id)
         viewModel.observeMessages(chat.id)
+    }
+
+    DisposableEffect(chat.id) {
+        onDispose {
+            viewModel.stopObservingMessages()
+        }
     }
 
     val cs = MaterialTheme.colorScheme
@@ -90,7 +97,6 @@ fun ChatDetailScreen(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Кнопка отправки (минимализм + корректный disabled)
                 Surface(
                     shape = CircleShape,
                     color = if (messageText.isNotBlank()) cs.primary else cs.surface,
