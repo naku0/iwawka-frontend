@@ -2,9 +2,11 @@ package com.example.iwawka.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.iwawka.domain.models.Message
 import com.example.iwawka.domain.usecases.chat.GetChatUseCase
 import com.example.iwawka.domain.usecases.chat.GetChatsUseCase
 import com.example.iwawka.domain.usecases.chat.ObserveChatsUseCase
+import com.example.iwawka.domain.usecases.explanation.ExplainUseCase
 import com.example.iwawka.domain.usecases.message.GetMessagesUseCase
 import com.example.iwawka.domain.usecases.message.MarkAsReadUseCase
 import com.example.iwawka.domain.usecases.message.ObserveMessagesUseCase
@@ -21,6 +23,7 @@ import com.example.iwawka.ui.states.profile.ProfileAction
 import com.example.iwawka.ui.states.profile.ProfileReducer
 import com.example.iwawka.ui.states.profile.ProfileState
 import com.example.iwawka.ui.states.chat.ChatReducer
+import com.example.iwawka.ui.states.explain.ExplanationState
 import com.example.iwawka.ui.states.message.MessageAction
 import com.example.iwawka.ui.states.message.MessageReducer
 import com.example.iwawka.ui.states.message.MessageState
@@ -36,7 +39,8 @@ class MainViewModel(
     private val getMessagesUseCase: GetMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
     private val observeMessagesUseCase: ObserveMessagesUseCase,
-    private val markAsReadUseCase: MarkAsReadUseCase
+    private val markAsReadUseCase: MarkAsReadUseCase,
+    private val explainUseCase: ExplainUseCase
 
 ) : ViewModel() {
 
@@ -51,6 +55,9 @@ class MainViewModel(
     private val messageReducer = MessageReducer()
     private val _messagesState = MutableStateFlow(MessageState())
     val messageState: StateFlow<MessageState> = _messagesState.asStateFlow()
+
+    private val _explanationState = MutableStateFlow(ExplanationState(showDialog = false))
+    val explanationState: StateFlow<ExplanationState> = _explanationState.asStateFlow()
 
     private var observeMessagesJob: Job? = null
     private var observingChatId: String? = null
@@ -227,6 +234,50 @@ class MainViewModel(
             }
         }
     }
+
+    fun deleteMessages(){}
+
+    fun showExplanation(){
+        _explanationState.update { it.copy(isDialogVisible = true) }
+    }
+
+    fun hideExplanationDialog() {
+        _explanationState.update { it.copy(
+            isDialogVisible = false,
+            explanation = "",
+            error = null
+        ) }
+    }
+
+
+    fun explain(messages: List<Message>) {
+        viewModelScope.launch {
+            _explanationState.value = _explanationState.value.copy(
+                isLoading = true,
+                error = null
+            )
+
+            val result = explainUseCase.summarize(messages)
+
+            result.fold(
+                onSuccess = { explanation ->
+                    _explanationState.value = _explanationState.value.copy(
+                        explanation = explanation,
+                        isLoading = false,
+                        showDialog = true
+                    )
+                },
+                onFailure = { error ->
+                    _explanationState.value = _explanationState.value.copy(
+                        error = error.message ?: "Ошибка",
+                        isLoading = false,
+                        showDialog = true
+                    )
+                }
+            )
+        }
+    }
+
 
 
     init {

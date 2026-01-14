@@ -44,5 +44,14 @@ class TokenStorage(context: Context) {
     fun hasTokens(): Boolean {
         return getAccessToken() != null && getRefreshToken() != null
     }
+
+    fun getUserId(): String? {
+        val token = getAccessToken() ?: return null
+        return JwtDecoder.extractUserId(token)
+    }
+
+    fun getUserIdOrThrow(): String {
+        return getUserId() ?: throw IllegalStateException("User ID not found in token")
+    }
 }
 

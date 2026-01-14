@@ -2,11 +2,13 @@ package com.example.iwawka.di
 
 import android.content.Context
 import com.example.iwawka.domain.repositories.impl.ChatRepositoryImpl
+import com.example.iwawka.domain.repositories.impl.ExplainRepositoryImpl
 import com.example.iwawka.domain.repositories.impl.MessageRepositoryImpl
 import com.example.iwawka.domain.repositories.impl.ProfileRepositoryImpl
 import com.example.iwawka.domain.usecases.chat.GetChatUseCase
 import com.example.iwawka.domain.usecases.chat.GetChatsUseCase
 import com.example.iwawka.domain.usecases.chat.ObserveChatsUseCase
+import com.example.iwawka.domain.usecases.explanation.ExplainUseCase
 import com.example.iwawka.domain.usecases.message.GetMessagesUseCase
 import com.example.iwawka.domain.usecases.message.MarkAsReadUseCase
 import com.example.iwawka.domain.usecases.message.ObserveMessagesUseCase
@@ -17,6 +19,7 @@ import com.example.iwawka.model.api.IwawkaApi
 import com.example.iwawka.model.auth.TokenStorage
 import com.example.iwawka.model.clientStorage.SessionStore
 import com.example.iwawka.ui.viewmodel.MainViewModel
+import org.json.JSONObject
 
 object AppModule {
     private var tokenStorage: TokenStorage? = null
@@ -27,6 +30,7 @@ object AppModule {
     fun initialize(context: Context, baseUrl: String) {
         tokenStorage = TokenStorage(context)
         api = IwawkaApi(tokenStorage, baseUrl)
+
     }
 
     private fun getApi(): IwawkaApi {
@@ -51,6 +55,9 @@ object AppModule {
 
     private val chatRepository: com.example.iwawka.domain.repositories.interfaces.ChatRepository
         get() = ChatRepositoryImpl(getApi())
+
+    private val explainRepository: com.example.iwawka.domain.repositories.interfaces.ExplainRepository
+        get() = ExplainRepositoryImpl(getApi())
 
     private val getProfileUseCase: GetProfileUseCase
         get() = GetProfileUseCase(profileRepository)
@@ -79,6 +86,9 @@ object AppModule {
     private val markAsReadUseCase: MarkAsReadUseCase
         get() = MarkAsReadUseCase(messageRepository)
 
+    private val explainUseCase: ExplainUseCase
+        get() = ExplainUseCase(explainRepository)
+
     fun provideMainViewModel(): MainViewModel {
         return MainViewModel(
             getProfileUseCase,
@@ -89,7 +99,8 @@ object AppModule {
             getMessagesUseCase,
             sendMessageUseCase,
             observeMessagesUseCase,
-            markAsReadUseCase
+            markAsReadUseCase,
+            explainUseCase
         )
     }
 

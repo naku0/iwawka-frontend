@@ -4,8 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AiRequest(
-    val prompt: String,
-    val user: UserDto
+    val messages: List<MessageItem>
+)
+
+@Serializable
+data class MessageItem(
+    val author: String,
+    val message: String
 )
 
 @Serializable

@@ -1,6 +1,8 @@
 package com.example.iwawka.model.api
 
 import com.example.iwawka.model.auth.TokenStorage
+import com.example.iwawka.model.dto.AiRequest
+import com.example.iwawka.model.dto.AiResponse
 import com.example.iwawka.model.dto.LoginRequest
 import com.example.iwawka.model.dto.LoginResponse
 import com.example.iwawka.model.dto.LogoutRequest
@@ -123,6 +125,10 @@ class IwawkaApi(
             setBody(request)
         }.body()
 
+    suspend fun summarize(req: AiRequest): ApiResponse<AiResponse> =
+        client.post("$baseUrl/ai/summarize"){
+            setBody(req)
+        }.body()
     suspend fun updateUser(
         userId: Int,
         request: UpdateUserRequest
