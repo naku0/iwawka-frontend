@@ -8,6 +8,7 @@ import com.example.iwawka.domain.usecases.chat.GetChatUseCase
 import com.example.iwawka.domain.usecases.chat.GetChatsUseCase
 import com.example.iwawka.domain.usecases.chat.ObserveChatsUseCase
 import com.example.iwawka.domain.usecases.message.GetMessagesUseCase
+import com.example.iwawka.domain.usecases.message.MarkAsReadUseCase
 import com.example.iwawka.domain.usecases.message.ObserveMessagesUseCase
 import com.example.iwawka.domain.usecases.message.SendMessageUseCase
 import com.example.iwawka.domain.usecases.profile.GetProfileUseCase
@@ -36,7 +37,7 @@ object AppModule {
         return tokenStorage ?: throw IllegalStateException("AppModule not initialized. Call AppModule.initialize(context) first.")
     }
 
-    private val currentUserId: String
+    val currentUserId: String
         get() {
             // TODO: Extract from JWT token or get from API
             return "1"
@@ -75,6 +76,9 @@ object AppModule {
     private val observeMessagesUseCase: ObserveMessagesUseCase
         get() = ObserveMessagesUseCase(messageRepository)
 
+    private val markAsReadUseCase: MarkAsReadUseCase
+        get() = MarkAsReadUseCase(messageRepository)
+
     fun provideMainViewModel(): MainViewModel {
         return MainViewModel(
             getProfileUseCase,
@@ -84,7 +88,8 @@ object AppModule {
             observeChatsUseCase,
             getMessagesUseCase,
             sendMessageUseCase,
-            observeMessagesUseCase
+            observeMessagesUseCase,
+            markAsReadUseCase
         )
     }
 

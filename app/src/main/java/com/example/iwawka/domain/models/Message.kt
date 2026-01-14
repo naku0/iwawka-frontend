@@ -26,6 +26,7 @@ data class Message(
     val text: String,
     val timestamp: String,
     val isFromMe: Boolean,
-    var isRead: Boolean = false
-    // Убрали пока не нужные поля: senderId, chatId, replyToId, attachment, isSent, isEdited
+    var isRead: Boolean = false,
+    val senderId: String,
+    // Убрали пока не нужные поля: , chatId, replyToId, attachment, isSent, isEdited
 )

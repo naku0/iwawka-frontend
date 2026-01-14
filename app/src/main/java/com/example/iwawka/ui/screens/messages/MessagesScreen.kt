@@ -1,7 +1,6 @@
 package com.example.iwawka.ui.screens.messages
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,9 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,31 +34,41 @@ import com.example.iwawka.ui.viewmodel.MainViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MessagesScreen(
-    onChatClick: (String) -> Unit = {},
     viewModel: MainViewModel,
+    onChatClick: (String) -> Unit = {},
+
+    searchEnabled: Boolean = false,
+    searchText: String = "",
+    onSearchTextChange: (String) -> Unit = {},
 ) {
     val cs = MaterialTheme.colorScheme
     val chatsState by viewModel.chatsState.collectAsState()
-    var searchText by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.loadChats()
     }
 
-    Box(
+    val filteredChats = chatsState.chats
+        .sortedByDescending { it.timestamp }
+        .filter { chat ->
+            val q = searchText.trim()
+            if (!searchEnabled || q.isBlank()) true
+            else chat.userName.contains(q, ignoreCase = true) ||
+                chat.lastMessage.contains(q, ignoreCase = true)
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(cs.background)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
+        if (searchEnabled) {
             OutlinedTextField(
                 value = searchText,
-                onValueChange = { searchText = it },
-                modifier = Modifier.fillMaxWidth(),
+                onValueChange = onSearchTextChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 singleLine = true,
                 placeholder = {
                     Text(
@@ -88,51 +94,47 @@ fun MessagesScreen(
                     unfocusedTextColor = cs.onSurface
                 )
             )
+        } else {
+            Spacer(Modifier.height(8.dp))
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            when {
-                chatsState.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = cs.primary)
-                    }
+        when {
+            chatsState.isLoading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = cs.primary)
                 }
+            }
 
-                chatsState.error != null -> {
-                    // если внутри ErrorState есть "variant" цвета — потом тоже подчистим
-                    ErrorState(
-                        error = chatsState.error!!,
-                        onRetry = { viewModel.loadChats() }
-                    )
-                }
+            chatsState.error != null -> {
+                ErrorState(
+                    error = chatsState.error!!,
+                    onRetry = { viewModel.loadChats() }
+                )
+            }
 
-                else -> {
-                    val filteredChats = chatsState.chats.filter {
-                        it.userName.contains(searchText, ignoreCase = true)
-                    }
-                    if (filteredChats.isEmpty()) {
-                        EmptyChatsState(searchText = searchText)
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(
-                                items = filteredChats,
-                                key = { it.id }
-                            ) { chat ->
-                                ChatListItem(
-                                    chat = chat,
-                                    onChatClick = {
-                                        onChatClick(chat.id)
-                                        viewModel.selectChat(chat)
-                                    }
-                                )
+            filteredChats.isEmpty() -> {
+                EmptyChatsState(searchText = if (searchEnabled) searchText else "")
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = filteredChats,
+                        key = { it.id }
+                    ) { chat ->
+                        ChatListItem(
+                            chat = chat,
+                            onChatClick = {
+                                onChatClick(chat.id)
+                                viewModel.selectChat(chat)
                             }
-                        }
+                        )
+                        DividerSoft()
                     }
                 }
             }
@@ -140,6 +142,16 @@ fun MessagesScreen(
     }
 }
 
+@Composable
+private fun DividerSoft() {
+    val cs = MaterialTheme.colorScheme
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(cs.outline.copy(alpha = 0.08f))
+    )
+}
 
 @Composable
 private fun EmptyChatsState(searchText: String) {
@@ -151,16 +163,11 @@ private fun EmptyChatsState(searchText: String) {
             .padding(top = 48.dp),
         contentAlignment = Alignment.TopCenter
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = if (searchText.isBlank())
-                    "Что-то тут пусто 👀"
-                else
-                    "Ничего не найдено",
+                text = if (searchText.isBlank()) "Что-то тут пусто 👀" else "Ничего не найдено",
                 style = MaterialTheme.typography.titleMedium,
-                color = cs.onSurface.copy(alpha = 0.8f)
+                color = cs.onSurface.copy(alpha = 0.85f)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -176,4 +183,3 @@ private fun EmptyChatsState(searchText: String) {
         }
     }
 }
-

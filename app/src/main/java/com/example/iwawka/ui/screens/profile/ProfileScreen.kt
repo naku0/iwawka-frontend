@@ -44,7 +44,7 @@ fun ProfileScreen(
     viewModel: MainViewModel,
     userId: String = "1",
     onEditProfile: () -> Unit = {},
-    onProfileClick: (String) -> Unit = {}
+    onProfileClick: (String) -> Unit = {},
 ) {
     val cs = MaterialTheme.colorScheme
     val profileState by viewModel.profileState.collectAsStateWithLifecycle()

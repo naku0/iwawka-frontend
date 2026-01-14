@@ -35,9 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.iwawka.di.AppModule
 import com.example.iwawka.domain.models.Chat
 import com.example.iwawka.ui.components.messages.MessageBubble
 import com.example.iwawka.ui.viewmodel.MainViewModel
+import com.example.iwawka.domain.models.Message
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,9 +51,23 @@ fun ChatDetailScreen(
     var messageText by remember { mutableStateOf("") }
     val messagesState by viewModel.messageState.collectAsState()
 
+    val myId = remember { AppModule.currentUserId.toInt() }
+
     LaunchedEffect(chat.id) {
         viewModel.loadMessages(chat.id)
         viewModel.observeMessages(chat.id)
+        viewModel.markChatAsRead(chatId = chat.id)
+    }
+
+    LaunchedEffect(chat.id, messagesState.messages) {
+        val lastIncoming = messagesState.messages
+            .asSequence()
+            .filter { !it.isFromMe }
+            .mapNotNull { msg -> msg.id.toIntOrNull()?.let { id -> id to msg } }
+            .maxByOrNull { it.first }
+        lastIncoming?.second?.let{ msg ->
+            viewModel.markMessageAsRead(chat.id, msg.id)
+        }
     }
 
     DisposableEffect(chat.id) {
@@ -105,7 +121,7 @@ fun ChatDetailScreen(
                 ) {
                     IconButton(
                         onClick = {
-                            // TODO: Отправка сообщения
+                            viewModel.sendMessage(chat.id, messageText)
                             messageText = ""
                         },
                         enabled = messageText.isNotBlank(),

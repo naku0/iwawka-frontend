@@ -6,6 +6,7 @@ import com.example.iwawka.model.api.IwawkaApi
 import com.example.iwawka.model.api.MessageDto
 import com.example.iwawka.model.api.SendMessageRequest
 import com.example.iwawka.model.clientStorage.SessionStore
+import com.example.iwawka.ui.AppRoot
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,7 +39,8 @@ class MessageRepositoryImpl(
             text = dto.content,
             timestamp = formatTimestamp(dto.created),
             isFromMe = (me.isNotEmpty() && dto.senderId.toString() == me),
-            isRead = false
+            isRead = false,
+            senderId = dto.senderId.toString()
         )
     }
 
@@ -56,7 +58,9 @@ class MessageRepositoryImpl(
                     text = content,
                     timestamp = "Только что",
                     isFromMe = true,
-                    isRead = false
+                    isRead = false,
+                    senderId = myId()
+
                 )
                 Result.success(message)
             } else {
@@ -113,7 +117,12 @@ class MessageRepositoryImpl(
 
     override fun observeMessages(chatId: String): Flow<List<Message>> = flow {
         while (true) {
-            getMessages(chatId).getOrNull()?.let { emit(it) }
+            getMessages(chatId).getOrNull()?.let { messages ->
+                val updatedMessages = messages.map { serverMsg ->
+                    serverMsg
+                }
+                emit(updatedMessages)
+            }
             delay(5000) // Poll every 5 seconds
         }
     }

@@ -18,9 +18,13 @@ class AppState {
 
     val recentAccents= mutableListOf<Int>()
 
-    fun pushRecent(argb: Int, limit: Int = 6){
-        recentAccents.removeAll{it == argb}
-        recentAccents.add(0, argb)
+    companion object{
+        const val ACCENT_SMART_DEFAULT: Int = Int.MIN_VALUE
+    }
+
+    fun pushRecent(argbOrMarker: Int, limit: Int = 6){
+        recentAccents.removeAll{it == argbOrMarker}
+        recentAccents.add(0, argbOrMarker)
         while (recentAccents.size > limit) recentAccents.removeLast()
     }
 }

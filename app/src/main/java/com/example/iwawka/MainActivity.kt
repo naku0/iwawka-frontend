@@ -28,14 +28,10 @@ class MainActivity : ComponentActivity() {
     private val url: String = "http://10.0.2.2:8080"
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        android.util.Log.e("IWAWKA_BOOT", "0) before super")
         super.onCreate(savedInstanceState)
-        android.util.Log.e("IWAWKA_BOOT", "1) after super")
 
         try {
-            android.util.Log.e("IWAWKA_BOOT", "2) before initialize")
             AppModule.initialize(this, url)
-            android.util.Log.e("IWAWKA_BOOT", "3) after initialize")
         } catch (t: Throwable) {
             android.util.Log.e("IWAWKA_BOOT", "CRASH in initialize", t)
             throw t
@@ -57,7 +53,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            // сохраняем изменения из appState -> saved*
             LaunchedEffect(appState.themeMode) {
                 savedThemeMode = appState.themeMode
             }
@@ -78,7 +73,6 @@ class MainActivity : ComponentActivity() {
                     darkTheme = darkTheme,
                     accent = appState.accentColor
                 ) {
-                    // ВАЖНО: корневой Surface задаёт фон всему приложению
                     androidx.compose.material3.Surface(
                         modifier = androidx.compose.ui.Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background

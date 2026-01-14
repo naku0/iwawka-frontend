@@ -41,11 +41,14 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import com.example.iwawka.ui.components.common.ThemeSwitcher
+import com.example.iwawka.ui.theme.AppState
 import com.example.iwawka.ui.theme.LocalAppState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    onLogout: () -> Unit,
+) {
     val appState = LocalAppState.current
     val cs = MaterialTheme.colorScheme
 
@@ -73,11 +76,6 @@ fun SettingsScreen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Text(
-            text = "Настройки темы",
-            style = MaterialTheme.typography.titleLarge,
-            color = cs.onBackground
-        )
 
         ThemeSwitcher()
 
@@ -97,7 +95,6 @@ fun SettingsScreen() {
             }
         }
 
-        // Недавние
         if (appState.recentAccents.isNotEmpty()) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
@@ -106,7 +103,9 @@ fun SettingsScreen() {
                     color = cs.onSurface.copy(alpha = 0.7f)
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    appState.recentAccents.take(6).forEach { argb ->
+                    appState.recentAccents.take(6).forEach { stored ->
+                        val isMarker = stored == AppState.ACCENT_SMART_DEFAULT
+                        val argb = if(isMarker) smartDefault.toArgb() else stored
                         val c = Color(argb)
                         val selected = appState.accentArgb == argb
                         AccentDot(
@@ -135,14 +134,22 @@ fun SettingsScreen() {
                 rows.forEach { row ->
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         row.forEach { color ->
-                            val selected = appState.accentArgb == color.toArgb()
+                            val isSmart =color.toArgb() == smartDefault.toArgb()
+                            val selected = if (isSmart) appState.accentArgb == smartDefault.toArgb()
+                                            else appState.accentArgb == color.toArgb()
                             AccentChip(
                                 color = color,
                                 selected = selected,
                                 onClick = {
-                                    val argb = color.toArgb()
-                                    appState.accentArgb = argb
-                                    appState.pushRecent(argb)
+                                    if(isSmart){
+                                        appState.accentArgb = smartDefault.toArgb()
+                                        appState.pushRecent(AppState.ACCENT_SMART_DEFAULT)
+                                    }
+                                    else {
+                                        val argb = color.toArgb()
+                                        appState.accentArgb = argb
+                                        appState.pushRecent(argb)
+                                    }
                                 }
                             )
                         }
@@ -184,8 +191,13 @@ fun SettingsScreen() {
             onDismiss = { sheetOpen = false },
             onApply = { picked ->
                 val argb = picked.toArgb()
+                val smartArgb = smartDefault.toArgb()
                 appState.accentArgb = argb
-                appState.pushRecent(argb)
+                if (argb == smartArgb){
+                    appState.pushRecent(smartArgb)
+                } else {
+                    appState.pushRecent(argb)
+                }
                 sheetOpen = false
             }
         )

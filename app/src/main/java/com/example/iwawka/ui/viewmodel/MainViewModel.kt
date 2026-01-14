@@ -6,6 +6,7 @@ import com.example.iwawka.domain.usecases.chat.GetChatUseCase
 import com.example.iwawka.domain.usecases.chat.GetChatsUseCase
 import com.example.iwawka.domain.usecases.chat.ObserveChatsUseCase
 import com.example.iwawka.domain.usecases.message.GetMessagesUseCase
+import com.example.iwawka.domain.usecases.message.MarkAsReadUseCase
 import com.example.iwawka.domain.usecases.message.ObserveMessagesUseCase
 import com.example.iwawka.domain.usecases.message.SendMessageUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,8 @@ class MainViewModel(
     private val observeChatsUseCase: ObserveChatsUseCase,
     private val getMessagesUseCase: GetMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val observeMessagesUseCase: ObserveMessagesUseCase
+    private val observeMessagesUseCase: ObserveMessagesUseCase,
+    private val markAsReadUseCase: MarkAsReadUseCase
 
 ) : ViewModel() {
 
@@ -52,6 +54,9 @@ class MainViewModel(
 
     private var observeMessagesJob: Job? = null
     private var observingChatId: String? = null
+
+    private val lastReadMessageByChat = mutableMapOf<String, Int>()
+    private val inFlightRead = mutableSetOf<String>()
 
     fun dispatchProfileAction(action: ProfileAction) {
         _profileState.update { currentState ->
@@ -173,6 +178,56 @@ class MainViewModel(
     fun clearError() {
         dispatchProfileAction(ProfileAction.ClearError)
     }
+
+    fun markChatAsRead(chatId: String){
+        _chatsState.update { st ->
+            st.copy(
+                chats = st.chats.map { c ->
+                    if (c.id == chatId) c.copy(unreadCount =  0) else c
+                },
+                selectedChat = st.selectedChat?.let{ c ->
+                    if(c.id == chatId) c.copy(unreadCount = 0) else c
+                }
+            )
+        }
+    }
+    fun markMessageAsRead(chatId: String, messageId: String) {
+        val mId = messageId.toIntOrNull() ?: return
+
+        _messagesState.update { state ->
+            state.copy(
+                messages = state.messages.map { message ->
+                    if(message.id == messageId){
+                        message.copy(isRead = true)
+                    } else {
+                        message
+                    }
+                }
+            )
+        }
+
+        val prev = lastReadMessageByChat[chatId]
+        if (prev != null && mId <= prev) return
+
+        viewModelScope.launch {
+            markAsReadUseCase(mId).onSuccess {
+                markChatAsRead(chatId)
+            }.onFailure {
+                _messagesState.update { state ->
+                    state.copy(
+                        messages = state.messages.map { message ->
+                            if(message.id == messageId){
+                                message.copy(isRead = false)
+                            } else {
+                                message
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+
 
     init {
         viewModelScope.launch {

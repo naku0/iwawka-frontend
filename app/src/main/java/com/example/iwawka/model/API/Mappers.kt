@@ -16,7 +16,8 @@ object Mappers {
             text = dto.content,
             timestamp = formatTimestamp(dto.created),
             isFromMe = dto.senderId.toString() == currentUserId,
-            isRead = false
+            isRead = dto.isRead,
+            senderId = dto.senderId.toString()
         )
     }
 

@@ -37,8 +37,6 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun getChat(chatId: String): Result<Chat> {
-        // Note: API doesn't have getChat endpoint, so this would need to be implemented
-        // For now, returning error
         return Result.failure(NotImplementedError("getChat endpoint not available in API"))
     }
 

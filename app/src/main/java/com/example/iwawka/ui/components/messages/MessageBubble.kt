@@ -23,6 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.example.iwawka.domain.models.Message
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun MessageBubble(message: Message) {
@@ -32,7 +36,7 @@ fun MessageBubble(message: Message) {
     val containerModifier = if (message.isFromMe) {
         Modifier
             .clip(shape)
-            .background(cs.primary)
+            .background(cs.primary.copy(alpha = 0.65f))
     } else {
         Modifier
             .clip(shape)
@@ -65,7 +69,7 @@ fun MessageBubble(message: Message) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = message.timestamp,
+                    text = formatTime(message.timestamp),
                     style = MaterialTheme.typography.labelSmall,
                     color = if (message.isFromMe)
                         cs.onPrimary.copy(alpha = 0.7f)
@@ -84,5 +88,16 @@ fun MessageBubble(message: Message) {
                 }
             }
         }
+    }
+}
+
+private fun formatTime(timestamp: String): String {
+    return try {
+        val instant = Instant.parse(timestamp)
+        val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        formatter.format(dateTime)
+    } catch (e: Exception) {
+        timestamp.takeLast(5)
     }
 }
